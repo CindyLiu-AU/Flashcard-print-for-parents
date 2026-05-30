@@ -85,5 +85,49 @@
       "updatedAt": "2026-05-30",
       "deletedAt": "2026-05-30"
     }
+  ],
+  "categories": [
+    {
+      "id": "signs",
+      "label": "Road Signs",
+      "labelZh": "道路标识",
+      "icon": "🪧",
+      "bg": "#1d4ed8"
+    },
+    {
+      "id": "supermarket",
+      "label": "Supermarket",
+      "labelZh": "超市",
+      "icon": "🛒",
+      "bg": "#15803d"
+    },
+    {
+      "id": "food",
+      "label": "Food & Drink",
+      "labelZh": "饮食",
+      "icon": "🍜",
+      "bg": "#c2410c"
+    },
+    {
+      "id": "transport",
+      "label": "Transport",
+      "labelZh": "交通",
+      "icon": "🚌",
+      "bg": "#6d28d9"
+    },
+    {
+      "id": "medical",
+      "label": "Medical",
+      "labelZh": "医疗",
+      "icon": "🏥",
+      "bg": "#be185d"
+    },
+    {
+      "id": "other",
+      "label": "Other",
+      "labelZh": "其他",
+      "icon": "📌",
+      "bg": "#374151"
+    }
   ]
 }
