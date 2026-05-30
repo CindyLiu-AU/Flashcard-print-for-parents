@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reading Practice</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #f8fafc; color: #0f172a; font-family: Inter, system-ui, sans-serif; min-height: 100vh; }
+
+    /* ── NAV ─────────────────────────────────────────────────── */
+    .topnav { background: #0f172a; padding: 0 28px; display: flex; align-items: center; height: 48px; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #1e293b; gap: 2px; }
+    .brand { font-size: 13px; font-weight: 800; color: #f1f5f9; letter-spacing: 2px; text-transform: uppercase; margin-right: 18px; flex-shrink: 0; }
+    .brand em { color: #10b981; font-style: normal; }
+    .nav-btn { background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; color: #64748b; font-size: 12px; font-weight: 500; padding: 0 12px; height: 48px; display: flex; align-items: center; gap: 6px; transition: color .15s; white-space: nowrap; font-family: inherit; }
+    .nav-btn:hover { color: #e2e8f0; }
+    .nav-btn.active { color: #f8fafc; border-bottom-color: #10b981; }
+    .badge { background: #10b981; color: #fff; border-radius: 10px; padding: 1px 6px; font-size: 10px; font-weight: 700; }
+    .badge-sel { background: #f59e0b; }
+    .nav-spacer { flex: 1; }
+    .nav-util { background: none; border: 1px solid #334155; border-radius: 6px; color: #64748b; font-size: 11px; font-weight: 600; padding: 5px 10px; cursor: pointer; font-family: inherit; transition: all .15s; margin-left: 4px; }
+    .nav-util:hover { border-color: #64748b; color: #e2e8f0; }
+
+    /* ── BUTTONS ─────────────────────────────────────────────── */
+    .btn { border: none; border-radius: 7px; padding: 8px 16px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; transition: opacity .15s; display: inline-flex; align-items: center; gap: 6px; }
+    .btn:hover { opacity: .85; }
+    .btn-green { background: #10b981; color: #fff; }
+    .btn-slate { background: #e2e8f0; color: #475569; }
+    .btn-sm    { padding: 5px 10px; font-size: 11px; }
+
+    /* ── PAGE HEADER ─────────────────────────────────────────── */
+    .page-header { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 16px 28px; display: flex; justify-content: space-between; align-items: center; }
+    .ph-title { font-size: 18px; font-weight: 800; letter-spacing: -0.4px; }
+    .ph-sub   { font-size: 12px; color: #94a3b8; margin-top: 2px; }
+
+    /* ── CONTENT ─────────────────────────────────────────────── */
+    .content { padding: 22px 28px 80px; max-width: 1280px; margin: 0 auto; }
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* ── FILTERS ─────────────────────────────────────────────── */
+    .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px; }
+    .filter-btn { background: #fff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 5px 11px; font-size: 12px; font-weight: 500; cursor: pointer; color: #64748b; font-family: inherit; transition: all .15s; }
+    .filter-btn:hover { border-color: #94a3b8; color: #0f172a; }
+    .filter-btn.on { background: #0f172a; color: #fff; border-color: #0f172a; }
+    .search-bar { position: relative; flex-shrink: 0; }
+    .search-bar input { border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 6px 32px 6px 34px; font-size: 13px; font-family: inherit; color: #0f172a; outline: none; width: 220px; transition: border-color .15s, width .2s; background: #fff; }
+    .search-bar input:focus { border-color: #10b981; width: 280px; }
+    .search-bar .sb-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 13px; pointer-events: none; color: #94a3b8; }
+    .search-bar .sb-clear { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #94a3b8; font-size: 14px; line-height: 1; padding: 0; display: none; }
+    .search-bar .sb-clear:hover { color: #475569; }
+    .search-bar.has-query .sb-clear { display: block; }
+
+    /* ── CARD GRID ───────────────────────────────────────────── */
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(176px, 1fr)); gap: 12px; }
+
+    .fc { background: #fff; border: 1.5px solid #e2e8f0; border-radius: 10px; overflow: hidden; cursor: pointer; transition: border-color .15s, box-shadow .15s; position: relative; user-select: none; }
+    .fc:hover { border-color: #10b981; box-shadow: 0 3px 12px rgba(16,185,129,.12); }
+    .fc.sel { border-color: #10b981; box-shadow: 0 0 0 2.5px rgba(16,185,129,.35); }
+
+    .fc-img { width: 100%; height: 120px; object-fit: contain; display: block; background: #f1f5f9; }
+    .fc-placeholder { width: 100%; height: 120px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 900; font-size: 18px; letter-spacing: 1.5px; color: #fff; text-align: center; padding: 8px; }
+    .fc-body { padding: 9px 11px 10px; }
+    .fc-en   { font-size: 13px; font-weight: 800; color: #0f172a; letter-spacing: .5px; }
+    .fc-zh   { font-size: 14px; font-weight: 500; color: #374151; font-family: 'Noto Sans SC', sans-serif; margin-top: 2px; }
+    .fc-cat  { margin-top: 6px; }
+    .fc-dates { margin-top: 6px; font-size: 10px; color: #94a3b8; line-height: 1.6; border-top: 1px solid #f1f5f9; padding-top: 5px; }
+
+    /* ── TRASH VIEW ──────────────────────────────────────────── */
+    .trash-list { display: flex; flex-direction: column; gap: 8px; max-width: 720px; }
+    .trash-item { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 16px; display: flex; align-items: center; gap: 14px; }
+    .trash-thumb { width: 52px; height: 52px; flex-shrink: 0; border-radius: 6px; overflow: hidden; background: #f1f5f9; display: flex; align-items: center; justify-content: center; }
+    .trash-thumb img { width: 100%; height: 100%; object-fit: contain; }
+    .trash-thumb-ph { font-size: 11px; font-weight: 800; color: #fff; text-align: center; padding: 4px; word-break: break-all; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+    .trash-info { flex: 1; min-width: 0; }
+    .trash-en { font-size: 13px; font-weight: 800; color: #0f172a; }
+    .trash-zh { font-size: 13px; color: #374151; font-family: 'Noto Sans SC', sans-serif; }
+    .trash-meta { font-size: 11px; color: #94a3b8; margin-top: 3px; }
+    .trash-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+    .fc-tick { position: absolute; top: 7px; right: 7px; width: 22px; height: 22px; background: #10b981; border-radius: 50%; display: none; align-items: center; justify-content: center; }
+    .fc.sel .fc-tick { display: flex; }
+    .fc-tick svg { width: 11px; height: 11px; }
+
+    .fc-over { position: absolute; top: 7px; left: 7px; display: none; gap: 4px; }
+    .fc:hover:not(.sel) .fc-over { display: flex; }
+    .fc-ob { background: rgba(15,23,42,.75); border: none; border-radius: 4px; padding: 3px 8px; font-size: 10px; font-weight: 700; color: #fff; cursor: pointer; font-family: inherit; }
+    .fc-ob:hover { background: rgba(15,23,42,.92); }
+    .fc-ob-del { background: rgba(220,38,38,.75); }
+    .fc-ob-del:hover { background: rgba(220,38,38,.92); }
+    /* Printed state — very grey so you can ignore them */
+    .fc.printed { filter: grayscale(100%); opacity: 0.35; }
+
+    /* Card sequence number — shown only when printed */
+    .fc-num {
+      position: absolute; top: 6px; left: 6px; z-index: 10;
+      background: #0f172a; color: #fff;
+      font-size: 11px; font-weight: 900;
+      border-radius: 5px; padding: 2px 7px;
+      letter-spacing: .3px;
+    }
+
+    /* Always-visible print toggle row at bottom of each card */
+    .fc-prt-row { border-top: 1px solid #e2e8f0; padding: 5px 8px; }
+    .fc-prt-btn {
+      width: 100%; border: 1px solid #e2e8f0; border-radius: 5px;
+      padding: 4px 6px; font-size: 10px; font-weight: 700;
+      cursor: pointer; font-family: inherit; transition: opacity .15s;
+      background: #f0fdf4; color: #15803d;
+    }
+    .fc-prt-btn.is-printed { background: #f1f5f9; color: #94a3b8; border-color: #e2e8f0; }
+    .fc-prt-btn:hover { opacity: .7; }
+
+    /* ── EMPTY ───────────────────────────────────────────────── */
+    .empty { grid-column: 1/-1; text-align: center; padding: 60px 20px; }
+    .empty-icon { font-size: 48px; margin-bottom: 12px; }
+    .empty-title { font-size: 15px; font-weight: 700; color: #475569; margin-bottom: 6px; }
+    .empty-sub { font-size: 13px; color: #94a3b8; }
+
+    /* ── SELECTION BAR ───────────────────────────────────────── */
+    .sel-bar { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #0f172a; color: #fff; border-radius: 12px; padding: 12px 20px; box-shadow: 0 8px 32px rgba(0,0,0,.35); display: flex; align-items: center; gap: 14px; font-size: 13px; z-index: 200; white-space: nowrap; }
+    .sel-bar.hidden { display: none; }
+
+    /* ── UNDO TOAST ──────────────────────────────────────────── */
+    .undo-toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #92400e; color: #fef3c7; border-radius: 10px; padding: 10px 16px; box-shadow: 0 6px 24px rgba(0,0,0,.3); display: flex; align-items: center; gap: 12px; font-size: 13px; font-weight: 600; z-index: 201; white-space: nowrap; }
+    .undo-toast.hidden { display: none; }
+    .undo-btn { background: #fef3c7; color: #92400e; border: none; border-radius: 6px; padding: 4px 12px; font-size: 12px; font-weight: 800; cursor: pointer; font-family: inherit; }
+    .undo-btn:hover { opacity: .85; }
+    .undo-close { background: none; border: none; color: #fcd34d; font-size: 14px; cursor: pointer; padding: 0 2px; line-height: 1; }
+
+    /* ── FORM ────────────────────────────────────────────────── */
+    .form-wrap { max-width: 660px; }
+    .form-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; }
+    .form-head { padding: 16px 22px 14px; border-bottom: 1px solid #f1f5f9; }
+    .form-head-title { font-size: 14px; font-weight: 800; }
+    .form-body { padding: 22px; display: flex; flex-direction: column; gap: 16px; }
+    .form-foot { padding: 14px 22px; border-top: 1px solid #f1f5f9; display: flex; gap: 10px; justify-content: flex-end; }
+    .float-save { box-shadow: 0 6px 20px rgba(16,185,129,.5); border-radius: 9px; padding: 10px 22px; font-size: 13px; font-weight: 800; letter-spacing: -.2px; animation: pulse-save 2s infinite; }
+    @keyframes pulse-save { 0%,100% { box-shadow: 0 8px 32px rgba(16,185,129,.55); } 50% { box-shadow: 0 8px 48px rgba(16,185,129,.9); } }
+
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field label { font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: .5px; }
+    .field input, .field textarea, .field select {
+      border: 1.5px solid #e2e8f0; border-radius: 7px; padding: 9px 12px;
+      font-size: 13px; font-family: inherit; outline: none; color: #0f172a; background: #fff;
+      transition: border-color .15s;
+    }
+    .field input:focus, .field textarea:focus, .field select:focus { border-color: #10b981; }
+    .field textarea { resize: vertical; min-height: 68px; }
+    .field-zh input { font-family: 'Noto Sans SC', sans-serif; font-size: 16px; }
+    .field-row { display: flex; gap: 12px; }
+    .field-row .field { flex: 1; }
+
+    /* Front type toggle */
+    .front-toggle { display: flex; gap: 8px; }
+    .ft-btn { flex: 1; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 10px; text-align: center; cursor: pointer; transition: all .15s; background: #fff; }
+    .ft-btn:hover { border-color: #94a3b8; }
+    .ft-btn.on { border-color: #10b981; background: #f0fdf4; }
+    .ft-btn-icon { font-size: 20px; margin-bottom: 4px; }
+    .ft-btn-label { font-size: 11px; font-weight: 700; color: #475569; }
+    .ft-btn.on .ft-btn-label { color: #059669; }
+
+    /* Image panel */
+    .img-panel { display: flex; flex-direction: column; gap: 10px; }
+    .upload-zone { border: 2px dashed #e2e8f0; border-radius: 10px; text-align: center; cursor: pointer; position: relative; overflow: hidden; transition: border-color .15s, background .15s; }
+    .upload-zone:hover, .upload-zone.drag { border-color: #10b981; background: #f0fdf4; }
+    .upload-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+    .upload-prompt { padding: 22px 16px; }
+    .upload-prompt-icon { font-size: 28px; margin-bottom: 6px; }
+    .upload-prompt-text { font-size: 12px; color: #94a3b8; line-height: 1.6; }
+    .upload-prompt-text strong { color: #475569; }
+    .upload-preview { display: none; position: relative; }
+    .upload-preview img { width: 100%; max-height: 180px; object-fit: contain; border-radius: 8px; display: block; }
+    .upload-actions { position: absolute; top: 8px; right: 8px; display: flex; gap: 4px; }
+    .upload-clear { background: rgba(15,23,42,.7); border: none; border-radius: 4px; color: #fff; font-size: 10px; font-weight: 700; padding: 3px 8px; cursor: pointer; }
+    .upload-replace { background: rgba(16,185,129,.82); }
+
+    /* URL input */
+    .url-row { display: flex; gap: 8px; }
+    .url-row input { flex: 1; }
+    .url-row .btn { flex-shrink: 0; }
+    .search-hint { font-size: 11px; color: #94a3b8; line-height: 1.6; }
+    .search-hint a { color: #3b82f6; }
+
+    /* Live card preview */
+    .form-preview { padding: 16px 22px 20px; border-top: 1px solid #f1f5f9; background: #f8fafc; }
+    .fp-label { font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
+    .fp-cards { display: flex; gap: 14px; }
+    .fp-card { flex: 1; border: 1.5px solid #e2e8f0; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; min-height: 130px; background: #fff; }
+    .fp-card-label { font-size: 10px; font-weight: 700; color: #94a3b8; text-align: center; padding: 4px 8px; border-bottom: 1px solid #f1f5f9; background: #fff; flex-shrink: 0; }
+    .fp-placeholder { flex: 1; display: flex; align-items: center; justify-content: center; color: #cbd5e1; font-size: 11px; padding: 10px; text-align: center; }
+    .fp-img { width: 100%; flex: 1; object-fit: contain; display: block; background: #f8fafc; min-height: 80px; }
+    .fp-text-face { flex: 1; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 17px; letter-spacing: 1.5px; color: #fff; padding: 6px; }
+    .fp-en-bar { padding: 4px 8px; font-size: 10px; font-weight: 800; text-align: center; border-top: 1px solid #e2e8f0; flex-shrink: 0; }
+    .fp-back-inner { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px; text-align: center; gap: 3px; }
+    .fp-zh { font-family: 'Noto Sans SC', sans-serif; font-size: 20px; font-weight: 700; color: #0f172a; }
+    .fp-en-b { font-size: 10px; color: #94a3b8; }
+
+    /* Search results grid */
+    .search-results { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 8px; }
+    .sr-img { width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: 6px; cursor: pointer; border: 2px solid transparent; transition: border-color .15s; }
+    .sr-img:hover { border-color: #10b981; }
+    .sr-img.picked { border-color: #10b981; box-shadow: 0 0 0 2px rgba(16,185,129,.4); }
+
+    /* Text preview */
+    .text-preview-wrap { border-radius: 10px; overflow: hidden; }
+    .text-preview { width: 100%; height: 120px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 900; letter-spacing: 2px; color: #fff; border-radius: 10px; }
+
+    /* Category pills */
+    .pill { display: inline-block; font-size: 10px; padding: 2px 7px; border-radius: 5px; font-weight: 700; }
+    .pill-signs       { background: #dbeafe; color: #1e40af; }
+    .pill-supermarket { background: #dcfce7; color: #166534; }
+    .pill-food        { background: #ffedd5; color: #9a3412; }
+    .pill-transport   { background: #ede9fe; color: #5b21b6; }
+    .pill-medical     { background: #fce7f3; color: #9d174d; }
+    .pill-other       { background: #f1f5f9; color: #475569; }
+
+    /* ── PRINT VIEW ──────────────────────────────────────────── */
+    /* Print preview — faithful replica of the printed strip: [FRONT | fold | BACK] */
+    .pv-pairs { display: flex; flex-direction: column; gap: 10px; max-width: 620px; }
+    .pv-strip { display: grid; grid-template-columns: 1fr 14px 1fr; height: 130px; }
+    .pv-row-actions { display: flex; gap: 6px; justify-content: flex-end; margin-top: 3px; }
+
+    /* Front — top+left+bottom border only (matches PDF) */
+    .pv-front {
+      border-top: 1.2px dashed #888;
+      border-left: 1.2px dashed #888;
+      border-bottom: 1.2px dashed #888;
+      border-right: none; border-radius: 0;
+      overflow: hidden; position: relative;
+      display: flex; flex-direction: column;
+    }
+    /* Back — top+bottom border only (matches PDF) */
+    .pv-back {
+      border-top: 1.2px dashed #888;
+      border-bottom: 1.2px dashed #888;
+      border-left: none; border-right: none; border-radius: 0;
+      overflow: hidden; position: relative;
+      display: flex; flex-direction: column;
+    }
+
+    /* Hole punch guide (circle with centre dot) */
+    .pv-hole {
+      position: absolute; top: 3px;
+      width: 8px; height: 8px;
+      border: 1px dashed #aaa; border-radius: 50%;
+      background: rgba(255,255,255,.65); z-index: 5;
+    }
+    .pv-hole::after {
+      content: ''; position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      width: 2px; height: 2px; background: #bbb; border-radius: 50%;
+    }
+    .pv-hole-left  { left: 3px; }
+    .pv-hole-right { right: 3px; }
+
+    /* Big card number — bottom-right on front, bottom-left on back */
+    .pv-card-num { position: absolute; bottom: 2px; font-size: 14px; font-weight: 900; color: #94a3b8; line-height: 1; }
+    .pv-card-num-r { right: 3px; }
+    .pv-card-num-l { left: 3px; }
+
+    /* Front */
+    .pv-front img { flex: 1; width: 100%; object-fit: contain; display: block; background: #f8fafc; min-height: 0; }
+    .pv-front-ph { flex: 1; display: flex; align-items: center; justify-content: center; font-weight: 900; color: #0f172a; background: #fff; padding: 4px 6px; text-align: center; word-break: break-word; min-height: 0; }
+    .pv-en { height: 28px; flex-shrink: 0; flex-grow: 0; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 800; border-top: 1px solid #e2e8f0; color: #0f172a; background: #fff; text-align: center; letter-spacing: .3px; padding: 0 4px; }
+
+    /* Fold divider — empty space (matches PDF) */
+    .pv-fold { background: #fafafa; }
+
+    /* Back inner layout */
+    .pv-back { align-items: center; justify-content: center; text-align: center; padding: 4px 8px; background: #fff; gap: 1px; }
+    .pv-zh { font-family: 'Noto Sans SC', sans-serif; font-size: 16px; font-weight: 700; color: #0f172a; line-height: 1.2; }
+    .pv-en-b { font-size: 8px; font-weight: 600; color: #64748b; }
+    .pv-hint { font-size: 7px; color: #94a3b8; line-height: 1.3; }
+    .pv-cat { position: absolute; bottom: 2px; right: 4px; font-size: 14px; font-weight: 700; color: #94a3b8; font-family: 'Noto Sans SC', sans-serif; }
+
+    /* ── PRINT SHEET (screen-hidden) ─────────────────────────── */
+    #print-sheet { display: none; }
+
+    /* ── PRINT MEDIA ─────────────────────────────────────────── */
+    @media print {
+      @page { size: A4; margin: 2mm 8mm; }
+      body { background: #fff; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+      .topnav, .page-header, .view, .sel-bar { display: none !important; }
+      #print-sheet { display: block !important; }
+
+      /* One A4 sheet = 4 card rows, no gaps — borders act as cut guides */
+      .sheet {
+        width: 194mm;
+        display: grid;
+        grid-template-columns: 1fr 9mm 1fr;
+        grid-template-rows: repeat(5, 57mm);
+        page-break-after: always;
+      }
+      .sheet:last-child { page-break-after: auto; }
+
+      /* Every printed card — top, left, bottom only; no right border; no rounded corners */
+      .pc {
+        border-top: 1.2px dashed #888;
+        border-left: 1.2px dashed #888;
+        border-bottom: 1.2px dashed #888;
+        border-right: none;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        page-break-inside: avoid;
+        position: relative;
+      }
+      .pc-empty { opacity: .18; }
+
+      /* Hole punch guide — front: top-left · back: top-right (mirrored so holes align when folded) */
+      .hole {
+        position: absolute;
+        top: 6mm;
+        width: 2mm; height: 2mm;
+        border: 1px dashed #aaa;
+        border-radius: 50%;
+        background: rgba(255,255,255,.55);
+        z-index: 5;
+      }
+      .hole::after {
+        content: '';
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%,-50%);
+        width: 0.5mm; height: 0.5mm;
+        background: #bbb;
+        border-radius: 50%;
+      }
+      .hole-left  { left: 6mm; }
+      .hole-right { right: 6mm; }
+
+      /* Fold divider — no visible lines, just empty space */
+      .fold-div { }
+
+      /* Horizontal cut rows between card rows */
+      .cut-h {
+        position: relative;
+      }
+      .cut-h::after {
+        content: '';
+        position: absolute;
+        top: 50%; left: 0; right: 0;
+        border-top: 1px dashed #bbb;
+      }
+      /* Centre cell of cut row — vertical fold line crosses horizontal cut line */
+      .cut-center {
+        border-left: 1px dashed #bbb;
+        border-right: 1px dashed #bbb;
+        position: relative;
+      }
+      .cut-center::after {
+        content: '';
+        position: absolute;
+        top: 50%; left: -1px; right: -1px;
+        border-top: 1px dashed #bbb;
+      }
+
+      /* FRONT — image */
+      .pc-img-wrap {
+        flex: 1;
+        min-height: 0;        /* let flex shrink below natural image height */
+        overflow: hidden;
+        position: relative;
+        background: #f8fafc;
+      }
+      .pc-front-img .pc-photo {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
+      }
+      .pc .pc-en {
+        height: 8mm; flex-shrink: 0; flex-grow: 0;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 20pt; font-weight: 800;
+        color: #0f172a; text-align: center; letter-spacing: .5px;
+      }
+
+      /* FRONT — text only */
+      .pc-front-text { justify-content: center; align-items: center; text-align: center; background: #fff; }
+      .pc-front-text .pc-big-en {
+        font-weight: 900; color: #0f172a;
+        letter-spacing: 1px; line-height: 1.1;
+        width: 100%; height: 100%;
+        display: flex; align-items: center; justify-content: center;
+        padding: 4mm; word-break: break-word; text-align: center;
+      }
+
+      /* Owner colour dot — top-right of every card (front and back) */
+      .color-dot {
+        position: absolute; top: 3mm; right: 3mm;
+        width: 8mm; height: 8mm; border-radius: 50%; z-index: 6;
+        print-color-adjust: exact; -webkit-print-color-adjust: exact;
+      }
+      .dot-blue { background: #2563eb; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+      .dot-pink { background: #ec4899; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+
+      /* Card number — same position on front and back so they align when folded */
+      .pc-num {
+        position: absolute; bottom: 2mm;
+        font-size: 18pt; font-weight: 900; color: #94a3b8; z-index: 5;
+      }
+      .pc-num-right { right: 3mm; }
+      .pc-num-left  { left: 3mm; }
+
+      /* BACK */
+      .pc-back { justify-content: center; align-items: center; text-align: center; padding: 4mm; background: #fff; border-left: none; }
+      .pc-back .pc-zh { font-family: 'Noto Sans SC', sans-serif; font-size: 20pt; font-weight: 700; color: #0f172a; line-height: 1.2; }
+      .pc-back .pc-en-b { font-size: 8.5pt; font-weight: 600; color: #64748b; margin-top: 2mm; letter-spacing: .5px; }
+      .pc-back .pc-hint { font-size: 7pt; color: #94a3b8; margin-top: 2mm; line-height: 1.4; }
+      .pc-back .pc-cat { position: absolute; bottom: 2mm; right: 3mm; font-size: 18pt; font-weight: 700; color: #94a3b8; font-family: 'Noto Sans SC', sans-serif; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ──────────────────────────────────────────────────── -->
+<nav class="topnav">
+  <div class="brand">RP<em>·</em></div>
+  <button class="nav-btn active" id="btn-library" onclick="showView('library')">
+    Library <span class="badge" id="badge-total">0</span>
+  </button>
+  <button class="nav-btn" id="btn-add" onclick="startAdd()">Add Card</button>
+  <button class="nav-btn" id="btn-print" onclick="showView('print')">
+    Print <span class="badge badge-sel" id="badge-sel" style="display:none">0</span>
+  </button>
+  <button class="nav-btn" id="btn-trash" onclick="showView('trash')">
+    Trash <span class="badge" id="badge-trash" style="display:none;background:#ef4444">0</span>
+  </button>
+  <div class="nav-spacer"></div>
+  <button class="nav-util" onclick="exportCards()">Export</button>
+  <label class="nav-util" style="cursor:pointer">Import
+    <input type="file" accept=".json" style="display:none" onchange="importCards(this)">
+  </label>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════════════
+     LIBRARY VIEW
+═══════════════════════════════════════════════════════════════ -->
+<div id="view-library" class="view active">
+  <div class="page-header">
+    <div>
+      <div class="ph-title">Flashcard Library</div>
+      <div class="ph-sub">Click a card to select · hover to edit / mark printed / delete</div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-slate" onclick="printAllUnprinted()">🖨 Print All Unprinted</button>
+      <button class="btn btn-green" onclick="startAdd()">+ Add Card</button>
+    </div>
+  </div>
+  <div class="content">
+    <div class="toolbar">
+      <div id="cat-filters" style="display:flex;gap:7px;flex-wrap:wrap"></div>
+      <div class="search-bar" id="search-bar">
+        <span class="sb-icon">🔍</span>
+        <input type="search" id="search-input" placeholder="Search English or Chinese…" oninput="setSearch(this.value)">
+        <button class="sb-clear" onclick="clearSearch()">✕</button>
+      </div>
+    </div>
+    <div class="card-grid" id="card-grid"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     ADD / EDIT VIEW
+═══════════════════════════════════════════════════════════════ -->
+<div id="view-add" class="view">
+  <div class="page-header">
+    <div class="ph-title" id="form-ph-title">Add Flashcard</div>
+  </div>
+  <div class="content">
+    <div class="form-wrap">
+      <div class="form-card">
+        <div class="form-body">
+
+          <!-- 1. FRONT TYPE -->
+          <div class="field">
+            <label>Front of card</label>
+            <div class="front-toggle">
+              <div class="ft-btn on" id="ft-image" onclick="setFrontType('image')">
+                <div class="ft-btn-icon">🖼️</div>
+                <div class="ft-btn-label">Photo or image</div>
+              </div>
+              <div class="ft-btn" id="ft-text" onclick="setFrontType('text')">
+                <div class="ft-btn-icon">🔤</div>
+                <div class="ft-btn-label">Text only</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. IMAGE PANEL -->
+          <div id="panel-image">
+            <div class="field" style="margin-bottom:10px">
+              <label>Upload image from your phone or computer</label>
+              <div class="upload-zone" id="upload-zone"
+                   ondragover="event.preventDefault();this.classList.add('drag')"
+                   ondragleave="this.classList.remove('drag')"
+                   ondrop="handleDrop(event)">
+                <input type="file" accept="image/*" id="img-input" onchange="handleFile(this.files[0])">
+                <div class="upload-prompt" id="upload-prompt">
+                  <div class="upload-prompt-icon">📷</div>
+                  <div class="upload-prompt-text"><strong>Click to upload</strong> or drag &amp; drop<br>JPG · PNG · WEBP — photos from phone work great</div>
+                </div>
+                <div class="upload-preview" id="upload-preview">
+                  <img id="img-preview" alt="preview">
+                  <div class="upload-actions">
+                    <button class="upload-clear upload-replace" onclick="event.stopPropagation();document.getElementById('img-input').click()">📷 Replace</button>
+                    <button class="upload-clear" onclick="clearImage(event)">✕ Remove</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Or paste an image URL from the web</label>
+              <div class="url-row">
+                <input type="url" id="f-url" placeholder="https://…  (right-click any image → Copy image address)">
+                <button class="btn btn-slate btn-sm" onclick="loadFromUrl()">Load</button>
+              </div>
+              <div class="search-hint">
+                Search for an image:
+                <a href="https://unsplash.com" target="_blank">Unsplash</a> ·
+                <a href="https://www.pexels.com" target="_blank">Pexels</a> ·
+                <a href="https://images.google.com" target="_blank">Google Images</a>
+                — right-click any photo → <em>Copy image address</em> → paste above
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. TEXT PREVIEW (text-only mode) -->
+          <div id="panel-text" style="display:none">
+            <div class="field">
+              <label>The English text will be shown large on the front</label>
+              <div class="text-preview-wrap">
+                <div class="text-preview" id="text-preview" style="background:#1e40af">PREVIEW</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. ENGLISH + CATEGORY -->
+          <div class="field-row">
+            <div class="field" style="flex:2">
+              <label>English text — shown on front</label>
+              <input type="text" id="f-en" placeholder="e.g. EXIT"
+                     style="font-weight:800;letter-spacing:1.5px"
+                     oninput="updateTextPreview();updateCardPreview()">
+            </div>
+            <div class="field" style="flex:1">
+              <label>Category</label>
+              <select id="f-cat" onchange="updateTextPreview();updateCardPreview()">
+                <option value="signs">🪧 Signs</option>
+                <option value="supermarket">🛒 Supermarket</option>
+                <option value="food">🍜 Food &amp; Drink</option>
+                <option value="transport">🚌 Transport</option>
+                <option value="medical">🏥 Medical</option>
+                <option value="other">📌 Other</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- 5. CHINESE -->
+          <div class="field field-zh">
+            <label>Chinese translation — shown on back of card</label>
+            <input type="text" id="f-zh" placeholder="例：出口" oninput="updateCardPreview()">
+          </div>
+
+          <!-- 6. HINT -->
+          <div class="field">
+            <label>Hint or context — shown on back (optional)</label>
+            <textarea id="f-hint" placeholder="e.g. Green EXIT signs are above doors in shops, malls and buildings. 在超市和商场门上方会看到这个绿色标志。"></textarea>
+          </div>
+
+        </div>
+
+        <!-- LIVE CARD PREVIEW -->
+        <div class="form-preview">
+          <div class="fp-label">Card Preview</div>
+          <div class="fp-cards">
+            <div class="fp-card" id="fp-front">
+              <div class="fp-card-label">Front</div>
+              <div class="fp-placeholder">Upload image or type word above</div>
+            </div>
+            <div class="fp-card" id="fp-back">
+              <div class="fp-card-label">Back</div>
+              <div class="fp-placeholder">Type Chinese translation above</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div style="position:sticky;bottom:32px;display:flex;justify-content:flex-end;gap:8px;max-width:660px;pointer-events:none;margin-top:16px">
+      <button class="btn btn-slate" onclick="showView('library')" style="pointer-events:auto;border-radius:9px;padding:10px 22px;font-size:13px;font-weight:800">Cancel</button>
+      <button class="btn btn-green float-save" id="float-save" onclick="saveCard()" style="pointer-events:auto">Save Card</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     PRINT VIEW
+═══════════════════════════════════════════════════════════════ -->
+<div id="view-print" class="view">
+  <div class="page-header">
+    <div>
+      <div class="ph-title">Print Flashcards</div>
+      <div class="ph-sub">A4 paper · 4 cards per sheet · cut &amp; fold · laminate</div>
+    </div>
+  </div>
+  <div class="content">
+    <div id="print-area"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     TRASH VIEW
+═══════════════════════════════════════════════════════════════ -->
+<div id="view-trash" class="view">
+  <div class="page-header">
+    <div>
+      <div class="ph-title">Deleted Cards</div>
+      <div class="ph-sub">Cards you have deleted — restore or permanently remove</div>
+    </div>
+    <button class="btn btn-slate" onclick="purgeAll()" id="purge-all-btn" style="display:none">🗑 Clear All</button>
+  </div>
+  <div class="content">
+    <div id="trash-list"></div>
+  </div>
+</div>
+
+<!-- ── PRINT SHEET (hidden on screen, visible when printing) ── -->
+<div id="print-sheet"></div>
+
+<!-- ── FLOATING SELECTION BAR ────────────────────────────────── -->
+<div class="sel-bar hidden" id="sel-bar">
+  <span id="sel-count"></span>
+  <button class="btn btn-green btn-sm" onclick="doPrint()">🖨️ Print Now</button>
+  <button class="btn btn-slate btn-sm" onclick="markSelPrinted()">✅ Mark Printed</button>
+  <button class="btn btn-slate btn-sm" onclick="clearSel()">Clear</button>
+</div>
+
+<div class="undo-toast hidden" id="undo-toast">
+  <span id="undo-msg"></span>
+  <button class="undo-btn" id="undo-btn" onclick="doUndo()">↩ Undo</button>
+  <button class="undo-btn" id="redo-btn" onclick="doRedo()" style="display:none">↪ Redo</button>
+  <button class="undo-close" onclick="hideUndo()">✕</button>
+</div>
+
+<script>
+  const STORE     = 'rp_cards_v1';
+  const DEL_STORE = 'rp_deleted_v1';
+  const CAT_LABEL    = { signs:'Signs', supermarket:'Supermarket', food:'Food & Drink', transport:'Transport', medical:'Medical', other:'Other' };
+  const CAT_LABEL_ZH = { signs:'标志', supermarket:'超市', food:'饮食', transport:'交通', medical:'医疗', other:'其他' };
+  const CAT_ICON  = { signs:'🪧', supermarket:'🛒', food:'🍜', transport:'🚌', medical:'🏥', other:'📌' };
+  // Background colours for text-only cards (front)
+  const CAT_BG = { signs:'#1d4ed8', supermarket:'#15803d', food:'#c2410c', transport:'#6d28d9', medical:'#be185d', other:'#374151' };
+
+  let cards       = [];
+  let deleted     = [];
+  let sel         = new Set();
+  let filter      = 'all';
+  let searchQuery = '';
+  let editId      = null;
+  let imgData     = null;
+  let frontType   = 'image';
+  let undoStack   = [];
+  let redoStack   = [];
+  let undoTimer   = null;
+
+  // ── STORAGE ─────────────────────────────────────────────────
+  function load()          { try { cards   = JSON.parse(localStorage.getItem(STORE)     || '[]'); } catch { cards   = []; } }
+  function loadDeleted()   { try { deleted = JSON.parse(localStorage.getItem(DEL_STORE) || '[]'); } catch { deleted = []; } }
+  function persist()       { localStorage.setItem(STORE,     JSON.stringify(cards));   }
+  function persistDeleted(){ localStorage.setItem(DEL_STORE, JSON.stringify(deleted)); }
+  function uid()           { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+
+  function fmtDate(iso) {
+    if (!iso) return '';
+    const [y, m, d] = iso.slice(0, 10).split('-');
+    return `${y}/${m}/${d}`;
+  }
+
+  // ── VIEWS ────────────────────────────────────────────────────
+  function showView(name) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('view-' + name).classList.add('active');
+    document.getElementById('btn-' + name).classList.add('active');
+    if (name === 'library') renderLibrary();
+    if (name === 'print')   renderPrintView();
+    if (name === 'trash')   renderTrash();
+  }
+
+  // ── LIBRARY ──────────────────────────────────────────────────
+  function setSearch(val) {
+    searchQuery = val.trim();
+    document.getElementById('search-bar').classList.toggle('has-query', searchQuery.length > 0);
+    renderLibrary();
+  }
+
+  function clearSearch() {
+    searchQuery = '';
+    document.getElementById('search-input').value = '';
+    document.getElementById('search-bar').classList.remove('has-query');
+    renderLibrary();
+  }
+
+  function renderLibrary() {
+    updateBadges();
+    renderFilters();
+    const q    = searchQuery.toLowerCase();
+    const base = (filter === 'all' ? cards : cards.filter(c => c.category === filter))
+                   .filter(c => {
+                     if (!q) return true;
+                     if (q.startsWith('#')) {
+                       const num = parseInt(q.slice(1));
+                       return !isNaN(num) && cards.findIndex(x => x.id === c.id) + 1 === num;
+                     }
+                     return c.en.toLowerCase().includes(q) || c.zh.toLowerCase().includes(q);
+                   });
+    const filtered = [...base].sort((a, b) => (a.printed ? 1 : 0) - (b.printed ? 1 : 0));
+    const grid = document.getElementById('card-grid');
+    if (!cards.length) {
+      grid.innerHTML = `<div class="empty"><div class="empty-icon">📚</div><div class="empty-title">No flashcards yet</div><div class="empty-sub">Click "Add Card" to create the first card for Dad &amp; Mum</div></div>`;
+      return;
+    }
+    if (!filtered.length) {
+      const msg = searchQuery ? `No cards matching "${searchQuery}"` : 'No cards in this category';
+      grid.innerHTML = `<div class="empty"><div class="empty-icon">🔍</div><div class="empty-title">${msg}</div></div>`;
+      return;
+    }
+    grid.innerHTML = filtered.map(c => {
+      const bg    = CAT_BG[c.category] || '#374151';
+      const num   = cards.findIndex(x => x.id === c.id) + 1;
+      const thumb = c.img
+        ? (c.img.startsWith('data:') || c.img.startsWith('http')
+            ? `<img class="fc-img" src="${c.img}" alt="${c.en}" onerror="this.style.display='none'">`
+            : '')
+        : `<div class="fc-placeholder" style="background:${bg}">${c.en}</div>`;
+      return `
+        <div class="fc${sel.has(c.id) ? ' sel' : ''}${c.printed ? ' printed' : ''}" onclick="toggleSel('${c.id}')" data-id="${c.id}">
+          ${thumb}
+          ${c.printed ? `<div class="fc-num">#${num}</div>` : ''}
+          <div class="fc-over" onclick="event.stopPropagation()">
+            <button class="fc-ob" onclick="editCard('${c.id}')">Edit</button>
+            <button class="fc-ob fc-ob-del" onclick="deleteCard('${c.id}')">Del</button>
+          </div>
+          <div class="fc-tick">
+            <svg viewBox="0 0 11 9" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 4.5L4 7.5L10 1"/>
+            </svg>
+          </div>
+          <div class="fc-body">
+            <div class="fc-en">${c.en}</div>
+            <div class="fc-zh">${c.zh}</div>
+            <div class="fc-cat"><span class="pill pill-${c.category}">${CAT_LABEL[c.category]}</span></div>
+            <div class="fc-dates">
+              <div>Created: ${fmtDate(c.createdAt)}</div>
+              ${c.updatedAt ? `<div>Edited: ${fmtDate(c.updatedAt)}</div>` : ''}
+            </div>
+          </div>
+          <div class="fc-prt-row" onclick="event.stopPropagation()">
+            <button class="fc-prt-btn${c.printed ? ' is-printed' : ''}" onclick="togglePrinted('${c.id}')">
+              ${c.printed ? '↩ Unprint' : '🖨 Mark Printed'}
+            </button>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function renderFilters() {
+    const cats = [...new Set(cards.map(c => c.category))];
+    document.getElementById('cat-filters').innerHTML = [
+      `<button class="filter-btn${filter==='all'?' on':''}" onclick="setFilter('all')">All (${cards.length})</button>`,
+      ...cats.map(cat => `<button class="filter-btn${filter===cat?' on':''}" onclick="setFilter('${cat}')">${CAT_ICON[cat]} ${CAT_LABEL[cat]}</button>`)
+    ].join('');
+  }
+
+  function setFilter(cat) { filter = cat; renderLibrary(); }
+
+  function toggleSel(id) {
+    if (sel.has(id)) sel.delete(id); else sel.add(id);
+    const el = document.querySelector(`[data-id="${id}"]`);
+    if (el) el.classList.toggle('sel', sel.has(id));
+    updateBadges();
+  }
+
+  function clearSel() { sel.clear(); renderLibrary(); }
+
+  function updateBadges() {
+    document.getElementById('badge-total').textContent = cards.length;
+    const bt = document.getElementById('badge-trash');
+    bt.textContent = deleted.length;
+    bt.style.display = deleted.length ? '' : 'none';
+    const bs = document.getElementById('badge-sel');
+    const sb = document.getElementById('sel-bar');
+    if (sel.size > 0) {
+      bs.textContent = sel.size; bs.style.display = '';
+      document.getElementById('sel-count').textContent = `${sel.size} card${sel.size!==1?'s':''} selected`;
+      sb.classList.remove('hidden');
+    } else {
+      bs.style.display = 'none';
+      sb.classList.add('hidden');
+    }
+  }
+
+  // ── ADD / EDIT ────────────────────────────────────────────────
+  function startAdd() {
+    editId = null; imgData = null;
+    document.getElementById('f-en').value   = '';
+    document.getElementById('f-zh').value   = '';
+    document.getElementById('f-hint').value = '';
+    document.getElementById('f-url').value  = '';
+    document.getElementById('f-cat').value  = 'signs';
+    document.getElementById('img-input').value = '';
+    showUploadPrompt();
+    setFrontType('image');
+    document.getElementById('form-ph-title').textContent = 'Add Flashcard';
+    document.getElementById('float-save').textContent    = 'Save Card';
+    showView('add');
+    updateCardPreview();
+  }
+
+  function editCard(id) {
+    const c = cards.find(x => x.id === id);
+    if (!c) return;
+    editId = id; imgData = c.img || null;
+    document.getElementById('f-en').value   = c.en;
+    document.getElementById('f-zh').value   = c.zh;
+    document.getElementById('f-hint').value = c.hint || '';
+    document.getElementById('f-cat').value  = c.category;
+    document.getElementById('f-url').value  = '';
+    document.getElementById('img-input').value = '';
+    setFrontType(c.frontType || (c.img ? 'image' : 'text'));
+    if (c.img) showUploadPreview(c.img);
+    else       showUploadPrompt();
+    updateTextPreview();
+    document.getElementById('form-ph-title').textContent = 'Edit Flashcard';
+    document.getElementById('float-save').textContent    = 'Update Card';
+    showView('add');
+    updateCardPreview();
+  }
+
+  function deleteCard(id) {
+    if (!confirm('Delete this card?')) return;
+    const card = cards.find(c => c.id === id);
+    if (card) { deleted.unshift({ ...card, deletedAt: new Date().toISOString().slice(0,10) }); persistDeleted(); }
+    cards = cards.filter(c => c.id !== id); sel.delete(id);
+    persist(); renderLibrary();
+  }
+
+  function togglePrinted(id) {
+    const snapshot = JSON.parse(JSON.stringify(cards));
+    const idx = cards.findIndex(c => c.id === id);
+    if (idx < 0) return;
+    const nowPrinted = !cards[idx].printed;
+    cards[idx].printed = nowPrinted;
+    persist(); renderLibrary();
+    if (nowPrinted) showUndo('Marked as printed', snapshot);
+    else hideUndo();
+  }
+
+  function markSelPrinted() {
+    const snapshot = JSON.parse(JSON.stringify(cards));
+    const count = sel.size;
+    sel.forEach(id => {
+      const idx = cards.findIndex(c => c.id === id);
+      if (idx >= 0) cards[idx].printed = true;
+    });
+    persist(); sel.clear(); renderLibrary();
+    showUndo(`${count} card${count !== 1 ? 's' : ''} marked as printed`, snapshot);
+  }
+
+  function showUndo(message, snapshot) {
+    undoStack.push({ message, snapshot });
+    redoStack = [];
+    refreshUndoToast();
+  }
+
+  function refreshUndoToast() {
+    clearTimeout(undoTimer);
+    const hasUndo = undoStack.length > 0;
+    const hasRedo = redoStack.length > 0;
+    if (!hasUndo && !hasRedo) { hideUndo(); return; }
+    const label = hasUndo ? undoStack[undoStack.length - 1].message : 'Redo';
+    document.getElementById('undo-msg').textContent = label;
+    const undoBtn = document.getElementById('undo-btn');
+    const redoBtn = document.getElementById('redo-btn');
+    undoBtn.textContent = `↩ Undo${undoStack.length > 1 ? ' ('+undoStack.length+')' : ''}`;
+    undoBtn.disabled    = !hasUndo;
+    undoBtn.style.opacity = hasUndo ? '1' : '0.4';
+    redoBtn.textContent = `↪ Redo${redoStack.length > 1 ? ' ('+redoStack.length+')' : ''}`;
+    redoBtn.style.display = hasRedo ? '' : 'none';
+    document.getElementById('undo-toast').classList.remove('hidden');
+    undoTimer = setTimeout(() => { undoStack = []; redoStack = []; hideUndo(); }, 15000);
+  }
+
+  function hideUndo() {
+    clearTimeout(undoTimer);
+    document.getElementById('undo-toast').classList.add('hidden');
+  }
+
+  function doUndo() {
+    if (!undoStack.length) return;
+    redoStack.push(JSON.parse(JSON.stringify(cards)));
+    const { snapshot } = undoStack.pop();
+    cards = snapshot;
+    persist(); renderLibrary(); refreshUndoToast();
+  }
+
+  function doRedo() {
+    if (!redoStack.length) return;
+    const current = JSON.parse(JSON.stringify(cards));
+    undoStack.push({ message: 'Redo', snapshot: current });
+    cards = redoStack.pop();
+    persist(); renderLibrary(); refreshUndoToast();
+  }
+
+  function printAllUnprinted() {
+    const unprinted = cards.filter(c => !c.printed);
+    if (!unprinted.length) { alert('All cards are already marked as printed!'); return; }
+    sel.clear();
+    unprinted.forEach(c => sel.add(c.id));
+    showView('print');
+  }
+
+  function saveCard() {
+    const en   = document.getElementById('f-en').value.trim();
+    const zh   = document.getElementById('f-zh').value.trim();
+    const hint = document.getElementById('f-hint').value.trim();
+    const cat  = document.getElementById('f-cat').value;
+    if (!zh) { alert('Please enter the Chinese translation.'); return; }
+    const card = { en, zh, hint, category: cat, frontType, img: frontType === 'image' ? imgData : null };
+    if (editId) {
+      const idx = cards.findIndex(c => c.id === editId);
+      if (idx >= 0) cards[idx] = { ...cards[idx], ...card, updatedAt: new Date().toISOString().slice(0,10) };
+    } else {
+      cards.push({ id: uid(), createdAt: new Date().toISOString().slice(0,10), printed: false, ...card });
+    }
+    persist(); editId = null; showView('library');
+  }
+
+  // ── FRONT TYPE ────────────────────────────────────────────────
+  function setFrontType(type) {
+    frontType = type;
+    document.getElementById('ft-image').classList.toggle('on', type === 'image');
+    document.getElementById('ft-text').classList.toggle('on',  type === 'text');
+    document.getElementById('panel-image').style.display = type === 'image' ? '' : 'none';
+    document.getElementById('panel-text').style.display  = type === 'text'  ? '' : 'none';
+    if (type === 'text') updateTextPreview();
+    updateCardPreview();
+  }
+
+  function updateTextPreview() {
+    const en  = document.getElementById('f-en').value || 'PREVIEW';
+    const cat = document.getElementById('f-cat').value;
+    const bg  = CAT_BG[cat] || '#374151';
+    const el  = document.getElementById('text-preview');
+    el.style.background = bg;
+    el.textContent = en;
+  }
+
+  function updateCardPreview() {
+    const en  = document.getElementById('f-en').value.trim();
+    const zh  = document.getElementById('f-zh').value.trim();
+    const cat = document.getElementById('f-cat').value;
+    const bg  = CAT_BG[cat] || '#374151';
+    const front = document.getElementById('fp-front');
+    const back  = document.getElementById('fp-back');
+    if (!front || !back) return;
+
+    // Front
+    if (frontType === 'image' && imgData) {
+      front.innerHTML = `
+        <div class="fp-card-label">Front</div>
+        <img class="fp-img" src="${imgData}" alt="">
+        ${en ? `<div class="fp-en-bar">${en}</div>` : ''}`;
+    } else if (frontType === 'text' && en) {
+      front.innerHTML = `
+        <div class="fp-card-label">Front</div>
+        <div class="fp-text-face" style="background:${bg}">${en}</div>`;
+    } else {
+      front.innerHTML = `
+        <div class="fp-card-label">Front</div>
+        <div class="fp-placeholder">${frontType === 'image' ? 'Upload an image' : 'Type English word above'}</div>`;
+    }
+
+    // Back
+    if (zh) {
+      back.innerHTML = `
+        <div class="fp-card-label">Back</div>
+        <div class="fp-back-inner">
+          <div class="fp-zh">${zh}</div>
+          ${en ? `<div class="fp-en-b">${en}</div>` : ''}
+        </div>`;
+    } else {
+      back.innerHTML = `
+        <div class="fp-card-label">Back</div>
+        <div class="fp-placeholder">Type Chinese translation above</div>`;
+    }
+  }
+
+  // ── IMAGE UPLOAD ──────────────────────────────────────────────
+  function handleFile(file) {
+    if (!file) return;
+    if (file.size > 8 * 1024 * 1024) { alert('Image too large. Max 8 MB.'); return; }
+    const reader = new FileReader();
+    reader.onload = e => compressImage(e.target.result, 920, 0.80).then(d => { imgData = d; showUploadPreview(d); updateCardPreview(); });
+    reader.readAsDataURL(file);
+  }
+
+  function handleDrop(e) {
+    e.preventDefault();
+    document.getElementById('upload-zone').classList.remove('drag');
+    const file = e.dataTransfer?.files?.[0];
+    if (file && file.type.startsWith('image/')) handleFile(file);
+  }
+
+  function loadFromUrl() {
+    const url = document.getElementById('f-url').value.trim();
+    if (!url) return;
+    imgData = url;
+    showUploadPreview(url);
+    updateCardPreview();
+  }
+
+  function compressImage(src, maxW, q) {
+    return new Promise(resolve => {
+      const img = new Image();
+      img.onload = () => {
+        const scale  = Math.min(1, maxW / img.width);
+        const canvas = document.createElement('canvas');
+        canvas.width  = Math.round(img.width  * scale);
+        canvas.height = Math.round(img.height * scale);
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/jpeg', q));
+      };
+      img.src = src;
+    });
+  }
+
+  function showUploadPrompt()  { document.getElementById('upload-prompt').style.display  = ''; document.getElementById('upload-preview').style.display = 'none'; }
+  function showUploadPreview(src) { document.getElementById('img-preview').src = src; document.getElementById('upload-preview').style.display = 'block'; document.getElementById('upload-prompt').style.display = 'none'; }
+  function clearImage(e)       { e.stopPropagation(); imgData = null; document.getElementById('img-input').value = ''; document.getElementById('f-url').value = ''; showUploadPrompt(); updateCardPreview(); }
+
+  // ── TRASH VIEW ────────────────────────────────────────────────
+  function renderTrash() {
+    const list = document.getElementById('trash-list');
+    const btn  = document.getElementById('purge-all-btn');
+    btn.style.display = deleted.length ? '' : 'none';
+    if (!deleted.length) {
+      list.innerHTML = `<div class="empty"><div class="empty-icon">🗑️</div><div class="empty-title">No deleted cards</div><div class="empty-sub">Deleted cards appear here so you can restore them</div></div>`;
+      return;
+    }
+    list.innerHTML = `<div class="trash-list">` + deleted.map(c => {
+      const bg    = CAT_BG[c.category] || '#374151';
+      const thumb = c.img
+        ? `<img src="${c.img}" alt="${c.en}">`
+        : `<div class="trash-thumb-ph" style="background:${bg}">${c.en || '?'}</div>`;
+      return `
+        <div class="trash-item">
+          <div class="trash-thumb">${thumb}</div>
+          <div class="trash-info">
+            <div class="trash-en">${c.en || '(no English)'}</div>
+            <div class="trash-zh">${c.zh}</div>
+            <div class="trash-meta">
+              Deleted ${fmtDate(c.deletedAt)} · Created ${fmtDate(c.createdAt)}
+              ${c.updatedAt ? ` · Edited ${fmtDate(c.updatedAt)}` : ''}
+            </div>
+          </div>
+          <div class="trash-actions">
+            <button class="btn btn-green btn-sm" onclick="restoreCard('${c.id}')">↩ Restore</button>
+            <button class="btn btn-slate btn-sm" onclick="purgeCard('${c.id}')">✕ Delete</button>
+          </div>
+        </div>`;
+    }).join('') + `</div>`;
+  }
+
+  function restoreCard(id) {
+    const idx = deleted.findIndex(c => c.id === id);
+    if (idx < 0) return;
+    const card = { ...deleted[idx] };
+    delete card.deletedAt;
+    cards.push(card);
+    deleted.splice(idx, 1);
+    persist(); persistDeleted(); renderTrash(); updateBadges();
+  }
+
+  function purgeCard(id) {
+    if (!confirm('Permanently delete this card? This cannot be undone.')) return;
+    deleted = deleted.filter(c => c.id !== id);
+    persistDeleted(); renderTrash(); updateBadges();
+  }
+
+  function purgeAll() {
+    if (!confirm(`Permanently delete all ${deleted.length} deleted cards?`)) return;
+    deleted = [];
+    persistDeleted(); renderTrash(); updateBadges();
+  }
+
+  // ── PRINT VIEW ────────────────────────────────────────────────
+  function renderPrintView() {
+    const area   = document.getElementById('print-area');
+    const chosen = cards.filter(c => sel.has(c.id));
+    if (!chosen.length) {
+      area.innerHTML = `<div class="empty"><div class="empty-icon">🖨️</div><div class="empty-title">No cards selected</div><div class="empty-sub">Go to the Library, click cards to select them (green tick), then come back to print.</div></div>`;
+      return;
+    }
+    // Each card prints twice (blue + pink), so doubled count determines pages
+    const doubled  = chosen.length * 2;
+    const sheets   = Math.ceil(doubled / 5);
+    const capacity = sheets * 5;
+    const canAdd   = Math.floor((capacity - doubled) / 2);
+    const bg = c => CAT_BG[c.category] || '#374151';
+    let html = `
+      <div style="margin-bottom:28px">
+        <div style="display:flex;gap:12px;align-items:center;margin-bottom:10px">
+          <button onclick="doPrint()" style="
+            flex:1; padding:24px 20px;
+            background:#10b981; color:#fff; border:none; border-radius:16px;
+            font-size:32px; font-weight:900; font-family:inherit; cursor:pointer;
+            box-shadow:0 8px 32px rgba(16,185,129,.40); letter-spacing:-0.5px;
+            transition:opacity .15s; line-height:1.15; text-align:center;
+          " onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
+            🖨️ Print Now
+          </button>
+          <div style="font-size:15px;font-weight:700;color:#475569;white-space:nowrap;line-height:1.8">
+            <span style="color:#0f172a;font-size:22px;font-weight:900">${chosen.length}</span> card${chosen.length!==1?'s':''} &nbsp;·&nbsp;
+            <span style="color:#059669;font-size:22px;font-weight:900">${sheets}</span> piece${sheets!==1?'s':''} of paper &nbsp;·&nbsp;
+            <span style="color:#d97706;font-size:22px;font-weight:900">${canAdd}</span> card${canAdd!==1?'s':''} ${canAdd===0?'(pages full)':'can still add'}
+          </div>
+        </div>
+        <button class="btn btn-slate" onclick="clearSel();showView('library')">← Back to library</button>
+      </div>
+      <div class="pv-pairs">`;
+    chosen.forEach((c, i) => {
+      const num = cards.findIndex(x => x.id === c.id) + 1;
+      const frontInner = (c.frontType === 'text' || !c.img)
+        ? `<div class="pv-front-ph" style="font-size:${pvTextSize(c.en)}">${c.en || ''}</div>`
+        : `<img src="${c.img}" alt="${c.en}" onerror="this.style.display='none'">`;
+      html += `
+        <div class="pv-strip">
+          <div class="pv-front">
+            <div class="pv-hole pv-hole-left"></div>
+            <div class="pv-card-num pv-card-num-r">#${num}</div>
+            ${frontInner}
+            <div class="pv-en">${c.frontType === 'text' || !c.img ? '' : (c.en || '')}</div>
+          </div>
+          <div class="pv-fold"></div>
+          <div class="pv-back">
+            <div class="pv-card-num pv-card-num-l">#${num}</div>
+            <div class="pv-zh">${c.zh}</div>
+            ${c.hint ? `<div class="pv-hint">${c.hint}</div>` : ''}
+            <div class="pv-cat">${CAT_LABEL_ZH[c.category] || ''}</div>
+          </div>
+        </div>
+        <div class="pv-row-actions">
+          <button class="btn btn-slate btn-sm" onclick="editCard('${c.id}')">Edit</button>
+          <button class="btn btn-slate btn-sm" style="color:#ef4444" onclick="removeFromSel('${c.id}')">Remove</button>
+        </div>`;
+    });
+    html += `</div>`;
+    area.innerHTML = html;
+  }
+
+  function removeFromSel(id) {
+    sel.delete(id);
+    updateBadges();
+    renderPrintView();
+  }
+
+  // ── PRINT ENGINE ──────────────────────────────────────────────
+  function pvTextSize(text) {
+    const len = (text || '').length;
+    if (len <=  4) return '26px';
+    if (len <=  7) return '20px';
+    if (len <= 12) return '14px';
+    if (len <= 20) return '11px';
+    return '9px';
+  }
+
+  function textFontSize(text) {
+    const len = (text || '').length;
+    if (len <=  5) return '54pt';
+    if (len <=  9) return '38pt';
+    if (len <= 14) return '26pt';
+    if (len <= 22) return '18pt';
+    return '13pt';
+  }
+
+  function cardFront(c, dot) {
+    if (!c) return `<div class="pc pc-empty"></div>`;
+    const num  = cards.findIndex(x => x.id === c.id) + 1;
+    const dotEl = dot ? `<div class="color-dot dot-${dot}"></div>` : '';
+    if (c.frontType === 'text' || !c.img) {
+      const fs = textFontSize(c.en);
+      return `<div class="pc pc-front-text">
+                <div class="hole hole-left"></div>
+                ${dotEl}
+                <div class="pc-num pc-num-right">#${num}</div>
+                <div class="pc-big-en" style="font-size:${fs}">${c.en || ''}</div>
+                <div class="pc-en"></div>
+              </div>`;
+    }
+    return `<div class="pc pc-front-img">
+              <div class="hole hole-left"></div>
+              ${dotEl}
+              <div class="pc-num pc-num-right">#${num}</div>
+              <div class="pc-img-wrap">
+                <img class="pc-photo" src="${c.img}" alt="${c.en}" onerror="this.style.display='none'">
+              </div>
+              <div class="pc-en">${c.en || ''}</div>
+            </div>`;
+  }
+
+  function cardBack(c, dot) {
+    if (!c) return `<div class="pc pc-empty"></div>`;
+    const num  = cards.findIndex(x => x.id === c.id) + 1;
+    const dotEl = dot ? `<div class="color-dot dot-${dot}"></div>` : '';
+    return `<div class="pc pc-back">
+              ${dotEl}
+              <div class="pc-num pc-num-left">#${num}</div>
+              <div class="pc-zh">${c.zh}</div>
+              ${c.hint ? `<div class="pc-hint">${c.hint}</div>` : ''}
+              <div class="pc-cat">${CAT_LABEL_ZH[c.category] || CAT_LABEL[c.category]}</div>
+            </div>`;
+  }
+
+  function buildSheet(batch) {
+    const rows = [0, 1, 2, 3, 4].map(i => batch[i] || null);
+    let cells = '';
+    rows.forEach(item => {
+      const c   = item ? item.card : null;
+      const dot = item ? item.dot  : null;
+      cells += cardFront(c, dot);
+      cells += `<div class="fold-div"></div>`;
+      cells += cardBack(c, dot);
+    });
+    return `<div class="sheet">${cells}</div>`;
+  }
+
+  function doPrint() {
+    const chosen = cards.filter(c => sel.has(c.id));
+    if (!chosen.length) { alert('No cards selected.'); return; }
+    // Each card prints twice: blue (dad) then pink (mum)
+    const doubled = chosen.flatMap(c => [{ card: c, dot: 'blue' }, { card: c, dot: 'pink' }]);
+    let html = '';
+    for (let i = 0; i < doubled.length; i += 5) html += buildSheet(doubled.slice(i, i + 5));
+    document.getElementById('print-sheet').innerHTML = html;
+    window.print();
+  }
+
+  // ── EXPORT / IMPORT ───────────────────────────────────────────
+  function exportCards() {
+    if (!cards.length) { alert('No cards to export.'); return; }
+    const blob = new Blob([JSON.stringify(cards, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = 'rp-cards-' + new Date().toISOString().slice(0,10) + '.json'; a.click();
+  }
+
+  function importCards(input) {
+    const file = input.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const imported = JSON.parse(e.target.result);
+        if (!Array.isArray(imported)) throw 0;
+        const existing = new Set(cards.map(c => c.id));
+        const newCards = imported.filter(c => !existing.has(c.id));
+        cards = [...cards, ...newCards]; persist();
+        alert(`Imported ${newCards.length} new card${newCards.length!==1?'s':''}.`);
+        renderLibrary();
+      } catch { alert('Invalid file — please use an RP export.'); }
+    };
+    reader.readAsText(file); input.value = '';
+  }
+
+  // ── INIT ─────────────────────────────────────────────────────
+  load(); loadDeleted();
+  renderLibrary();
+</script>
+</body>
+</html>
