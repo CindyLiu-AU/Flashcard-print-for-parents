@@ -433,11 +433,51 @@
     Trash <span class="badge" id="badge-trash" style="display:none;background:#ef4444">0</span>
   </button>
   <div class="nav-spacer"></div>
+  <span id="sync-status" style="font-size:11px;color:#64748b;margin-right:4px"></span>
+  <button class="nav-util" id="sync-btn" onclick="showSyncModal()" title="GitHub sync settings">☁️</button>
   <button class="nav-util" onclick="exportCards()">Export</button>
   <label class="nav-util" style="cursor:pointer">Import
     <input type="file" accept=".json" style="display:none" onchange="importCards(this)">
   </label>
 </nav>
+
+<!-- ── SYNC MODAL ──────────────────────────────────────────────── -->
+<div id="sync-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;align-items:center;justify-content:center" onclick="if(event.target===this)hideSyncModal()">
+  <div style="background:#fff;border-radius:12px;padding:28px;max-width:480px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.3)">
+    <div style="font-size:16px;font-weight:800;margin-bottom:6px">☁️ GitHub Sync</div>
+    <div style="font-size:13px;color:#64748b;margin-bottom:18px">Cards automatically save to your GitHub repo and load on any browser.</div>
+
+    <div id="sync-connected" style="display:none;background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:12px;margin-bottom:16px;font-size:13px;color:#166534">
+      ✅ Connected — cards sync automatically
+    </div>
+
+    <div style="margin-bottom:12px">
+      <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:6px">GitHub Personal Access Token</label>
+      <input id="gh-token-input" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
+             style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 12px;font-size:13px;font-family:monospace;outline:none"
+             onfocus="this.style.borderColor='#10b981'" onblur="this.style.borderColor='#e2e8f0'">
+    </div>
+
+    <details style="margin-bottom:16px">
+      <summary style="font-size:12px;color:#10b981;cursor:pointer;font-weight:600">How to get a token</summary>
+      <ol style="font-size:12px;color:#475569;margin-top:8px;padding-left:18px;line-height:1.8">
+        <li>Go to <strong>github.com → Settings</strong> (top-right avatar)</li>
+        <li>Scroll down → <strong>Developer settings</strong></li>
+        <li><strong>Personal access tokens → Tokens (classic)</strong></li>
+        <li>Click <strong>Generate new token (classic)</strong></li>
+        <li>Note: anything, Expiration: No expiration</li>
+        <li>Check the <strong>repo</strong> checkbox</li>
+        <li>Click <strong>Generate token</strong> → Copy it</li>
+      </ol>
+    </details>
+
+    <div style="display:flex;gap:8px;justify-content:flex-end;align-items:center">
+      <button id="sync-disconnect-btn" style="display:none;font-size:12px;color:#ef4444;background:none;border:none;cursor:pointer;padding:6px" onclick="disconnectSync()">Disconnect</button>
+      <button onclick="hideSyncModal()" style="background:#e2e8f0;border:none;border-radius:7px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;color:#475569">Cancel</button>
+      <button onclick="saveToken()" style="background:#10b981;border:none;border-radius:7px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;color:#fff">Connect & Sync</button>
+    </div>
+  </div>
+</div>
 
 <!-- ══════════════════════════════════════════════════════════════
      LIBRARY VIEW
@@ -653,6 +693,11 @@
 <script>
   const STORE     = 'rp_cards_v1';
   const DEL_STORE = 'rp_deleted_v1';
+  const GH_REPO   = 'CindyLiu-AU/Flashcard-print-for-parents';
+  const GH_FILE   = 'cards.json';
+  const GH_TOKEN_KEY = 'rp_gh_token';
+  let ghSha = null;
+  let ghSaveTimer = null;
   const CAT_LABEL    = { signs:'Signs', supermarket:'Supermarket', food:'Food & Drink', transport:'Transport', medical:'Medical', other:'Other' };
   const CAT_LABEL_ZH = { signs:'标志', supermarket:'超市', food:'饮食', transport:'交通', medical:'医疗', other:'其他' };
   const CAT_ICON  = { signs:'🪧', supermarket:'🛒', food:'🍜', transport:'🚌', medical:'🏥', other:'📌' };
@@ -674,9 +719,111 @@
   // ── STORAGE ─────────────────────────────────────────────────
   function load()          { try { cards   = JSON.parse(localStorage.getItem(STORE)     || '[]'); } catch { cards   = []; } }
   function loadDeleted()   { try { deleted = JSON.parse(localStorage.getItem(DEL_STORE) || '[]'); } catch { deleted = []; } }
-  function persist()       { localStorage.setItem(STORE,     JSON.stringify(cards));   }
-  function persistDeleted(){ localStorage.setItem(DEL_STORE, JSON.stringify(deleted)); }
-  function uid()           { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+
+  function persist()       {
+    localStorage.setItem(STORE, JSON.stringify(cards));
+    scheduleGhSave();
+  }
+  function persistDeleted() {
+    localStorage.setItem(DEL_STORE, JSON.stringify(deleted));
+    scheduleGhSave();
+  }
+  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+
+  // ── GITHUB SYNC ──────────────────────────────────────────────
+  function ghToken() { return localStorage.getItem(GH_TOKEN_KEY); }
+
+  function setSyncStatus(state) {
+    const el = document.getElementById('sync-status');
+    if (!el) return;
+    if (state === 'saving')  { el.textContent = '☁️ Saving…'; el.style.color = '#f59e0b'; }
+    else if (state === 'ok') { el.textContent = '☁️ Synced';  el.style.color = '#10b981'; }
+    else if (state === 'err'){ el.textContent = '⚠️ Sync failed'; el.style.color = '#ef4444'; }
+    else                     { el.textContent = ''; }
+  }
+
+  function scheduleGhSave() {
+    if (!ghToken()) return;
+    clearTimeout(ghSaveTimer);
+    setSyncStatus('saving');
+    ghSaveTimer = setTimeout(doGhSave, 2000);
+  }
+
+  async function doGhSave() {
+    const token = ghToken();
+    if (!token) return;
+    try {
+      const payload = { cards, deleted };
+      const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))));
+      const body = { message: 'Update cards', content: encoded, branch: 'main' };
+      if (ghSha) body.sha = ghSha;
+      const res = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`, {
+        method: 'PUT',
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      if (!res.ok) throw new Error(res.status);
+      const data = await res.json();
+      ghSha = data.content.sha;
+      setSyncStatus('ok');
+    } catch(e) {
+      console.error('GitHub save failed:', e);
+      setSyncStatus('err');
+    }
+  }
+
+  async function doGhLoad() {
+    const token = ghToken();
+    if (!token) return false;
+    try {
+      setSyncStatus('saving');
+      const res = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.status === 404) { setSyncStatus('ok'); return false; }
+      if (!res.ok) throw new Error(res.status);
+      const data = await res.json();
+      ghSha = data.sha;
+      const payload = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g, '')))));
+      if (Array.isArray(payload.cards))   { cards   = payload.cards;   localStorage.setItem(STORE,     JSON.stringify(cards));   }
+      if (Array.isArray(payload.deleted)) { deleted = payload.deleted; localStorage.setItem(DEL_STORE, JSON.stringify(deleted)); }
+      setSyncStatus('ok');
+      return true;
+    } catch(e) {
+      console.error('GitHub load failed:', e);
+      setSyncStatus('err');
+      return false;
+    }
+  }
+
+  // ── SYNC MODAL ───────────────────────────────────────────────
+  function showSyncModal() {
+    const modal = document.getElementById('sync-modal');
+    modal.style.display = 'flex';
+    const existing = ghToken();
+    document.getElementById('gh-token-input').value = existing ? '••••••••••••••••••••' : '';
+    document.getElementById('sync-connected').style.display = existing ? 'block' : 'none';
+    document.getElementById('sync-disconnect-btn').style.display = existing ? 'inline-block' : 'none';
+  }
+  function hideSyncModal() {
+    document.getElementById('sync-modal').style.display = 'none';
+  }
+  async function saveToken() {
+    const val = document.getElementById('gh-token-input').value.trim();
+    if (!val || val.startsWith('•')) { hideSyncModal(); return; }
+    localStorage.setItem(GH_TOKEN_KEY, val);
+    hideSyncModal();
+    const loaded = await doGhLoad();
+    if (loaded) renderLibrary();
+    else await doGhSave();
+  }
+  function disconnectSync() {
+    if (!confirm('Disconnect GitHub sync? Your cards stay in the browser.')) return;
+    localStorage.removeItem(GH_TOKEN_KEY);
+    ghSha = null;
+    hideSyncModal();
+    setSyncStatus('');
+  }
 
   function fmtDate(iso) {
     if (!iso) return '';
@@ -1282,6 +1429,9 @@
   // ── INIT ─────────────────────────────────────────────────────
   load(); loadDeleted();
   renderLibrary();
+  if (ghToken()) {
+    doGhLoad().then(loaded => { if (loaded) renderLibrary(); });
+  }
 </script>
 </body>
 </html>
