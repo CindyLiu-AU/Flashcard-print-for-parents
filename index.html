@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-Hans">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Reading Practice</title>
+  <title>识字卡片</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -417,21 +417,21 @@
 <nav class="topnav">
   <div class="brand">RP<em>·</em></div>
   <button class="nav-btn active" id="btn-library" onclick="showView('library')">
-    Library <span class="badge" id="badge-total">0</span>
+    卡片库 <span class="badge" id="badge-total">0</span>
   </button>
-  <button class="nav-btn" id="btn-add" onclick="startAdd()">Add Card</button>
+  <button class="nav-btn" id="btn-add" onclick="startAdd()">新建卡片</button>
   <button class="nav-btn" id="btn-print" onclick="showView('print')">
-    Print <span class="badge badge-sel" id="badge-sel" style="display:none">0</span>
+    打印 <span class="badge badge-sel" id="badge-sel" style="display:none">0</span>
   </button>
   <button class="nav-btn" id="btn-trash" onclick="showView('trash')">
-    Trash <span class="badge" id="badge-trash" style="display:none;background:#ef4444">0</span>
+    回收站 <span class="badge" id="badge-trash" style="display:none;background:#ef4444">0</span>
   </button>
   <div class="nav-spacer"></div>
   <span id="sync-status" style="font-size:11px;color:#64748b;margin-right:4px"></span>
-  <button class="nav-util" id="sync-btn" onclick="showSyncModal()" title="GitHub sync settings">☁️</button>
-  <button class="nav-util" onclick="showCatsModal()">⚙️ Categories</button>
-  <button class="nav-util" onclick="exportCards()">Export</button>
-  <label class="nav-util" style="cursor:pointer">Import
+  <button class="nav-util" id="sync-btn" onclick="showSyncModal()" title="GitHub 同步设置">☁️</button>
+  <button class="nav-util" onclick="showCatsModal()">⚙️ 分类</button>
+  <button class="nav-util" onclick="exportCards()">导出</button>
+  <label class="nav-util" style="cursor:pointer">导入
     <input type="file" accept=".json" style="display:none" onchange="importCards(this)">
   </label>
 </nav>
@@ -439,37 +439,37 @@
 <!-- ── SYNC MODAL ──────────────────────────────────────────────── -->
 <div id="sync-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;align-items:center;justify-content:center" onclick="if(event.target===this)hideSyncModal()">
   <div style="background:#fff;border-radius:12px;padding:28px;max-width:480px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.3)">
-    <div style="font-size:16px;font-weight:800;margin-bottom:6px">☁️ GitHub Sync</div>
-    <div style="font-size:13px;color:#64748b;margin-bottom:18px">Cards automatically save to your GitHub repo and load on any browser.</div>
+    <div style="font-size:16px;font-weight:800;margin-bottom:6px">☁️ GitHub 同步</div>
+    <div style="font-size:13px;color:#64748b;margin-bottom:18px">卡片会自动保存到您的 GitHub 仓库，并在任何浏览器中加载。</div>
 
     <div id="sync-connected" style="display:none;background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:12px;margin-bottom:16px;font-size:13px;color:#166534">
-      ✅ Connected — cards sync automatically
+      ✅ 已连接 — 卡片自动同步
     </div>
 
     <div style="margin-bottom:12px">
-      <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:6px">GitHub Personal Access Token</label>
+      <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:6px">GitHub 个人访问令牌</label>
       <input id="gh-token-input" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
              style="width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 12px;font-size:13px;font-family:monospace;outline:none"
              onfocus="this.style.borderColor='#10b981'" onblur="this.style.borderColor='#e2e8f0'">
     </div>
 
     <details style="margin-bottom:16px">
-      <summary style="font-size:12px;color:#10b981;cursor:pointer;font-weight:600">How to get a token</summary>
+      <summary style="font-size:12px;color:#10b981;cursor:pointer;font-weight:600">如何获取令牌</summary>
       <ol style="font-size:12px;color:#475569;margin-top:8px;padding-left:18px;line-height:1.8">
-        <li>Go to <strong>github.com → Settings</strong> (top-right avatar)</li>
-        <li>Scroll down → <strong>Developer settings</strong></li>
+        <li>前往 <strong>github.com → Settings</strong>（右上角头像）</li>
+        <li>向下滚动 → <strong>Developer settings</strong></li>
         <li><strong>Personal access tokens → Tokens (classic)</strong></li>
-        <li>Click <strong>Generate new token (classic)</strong></li>
-        <li>Note: anything, Expiration: No expiration</li>
-        <li>Check the <strong>repo</strong> checkbox</li>
-        <li>Click <strong>Generate token</strong> → Copy it</li>
+        <li>点击 <strong>Generate new token (classic)</strong></li>
+        <li>Note：随意填写，Expiration：选 No expiration</li>
+        <li>勾选 <strong>repo</strong> 复选框</li>
+        <li>点击 <strong>Generate token</strong> → 复制令牌</li>
       </ol>
     </details>
 
     <div style="display:flex;gap:8px;justify-content:flex-end;align-items:center">
-      <button id="sync-disconnect-btn" style="display:none;font-size:12px;color:#ef4444;background:none;border:none;cursor:pointer;padding:6px" onclick="disconnectSync()">Disconnect</button>
-      <button onclick="hideSyncModal()" style="background:#e2e8f0;border:none;border-radius:7px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;color:#475569">Cancel</button>
-      <button onclick="saveToken()" style="background:#10b981;border:none;border-radius:7px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;color:#fff">Connect & Sync</button>
+      <button id="sync-disconnect-btn" style="display:none;font-size:12px;color:#ef4444;background:none;border:none;cursor:pointer;padding:6px" onclick="disconnectSync()">断开连接</button>
+      <button onclick="hideSyncModal()" style="background:#e2e8f0;border:none;border-radius:7px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;color:#475569">取消</button>
+      <button onclick="saveToken()" style="background:#10b981;border:none;border-radius:7px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;color:#fff">连接并同步</button>
     </div>
   </div>
 </div>
@@ -478,21 +478,21 @@
 <div id="cats-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;align-items:center;justify-content:center" onclick="if(event.target===this)hideCatsModal()">
   <div style="background:#fff;border-radius:12px;padding:28px;max-width:520px;width:95%;box-shadow:0 20px 60px rgba(0,0,0,.3);max-height:90vh;overflow-y:auto">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
-      <div style="font-size:16px;font-weight:800">⚙️ Manage Categories</div>
+      <div style="font-size:16px;font-weight:800">⚙️ 管理分类</div>
       <button onclick="hideCatsModal()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#94a3b8;line-height:1">✕</button>
     </div>
     <div id="cats-list" style="display:flex;flex-direction:column;gap:6px;margin-bottom:16px"></div>
     <div id="cat-form" style="display:none;background:#f8fafc;border-radius:8px;padding:16px;margin-bottom:12px">
-      <div style="font-size:13px;font-weight:700;margin-bottom:12px" id="cat-form-title">Add Category</div>
+      <div style="font-size:13px;font-weight:700;margin-bottom:12px" id="cat-form-title">添加分类</div>
       <div style="display:grid;grid-template-columns:60px 1fr 1fr;gap:8px;margin-bottom:8px">
         <div>
-          <label style="font-size:11px;font-weight:600;color:#64748b;display:block;margin-bottom:4px">Icon</label>
+          <label style="font-size:11px;font-weight:600;color:#64748b;display:block;margin-bottom:4px">图标</label>
           <input id="cf-icon" type="text" maxlength="2" placeholder="🏷️"
                  style="width:100%;border:1.5px solid #e2e8f0;border-radius:6px;padding:6px;font-size:20px;text-align:center;outline:none">
         </div>
         <div>
-          <label style="font-size:11px;font-weight:600;color:#64748b;display:block;margin-bottom:4px">English name</label>
-          <input id="cf-label" type="text" placeholder="e.g. Shopping"
+          <label style="font-size:11px;font-weight:600;color:#64748b;display:block;margin-bottom:4px">英文名称</label>
+          <input id="cf-label" type="text" placeholder="例：Shopping"
                  style="width:100%;border:1.5px solid #e2e8f0;border-radius:6px;padding:6px 10px;font-size:13px;outline:none">
         </div>
         <div>
@@ -502,16 +502,16 @@
         </div>
       </div>
       <div style="margin-bottom:12px">
-        <label style="font-size:11px;font-weight:600;color:#64748b;display:block;margin-bottom:6px">Card colour <span style="font-weight:400">(used as background for text-only cards)</span></label>
+        <label style="font-size:11px;font-weight:600;color:#64748b;display:block;margin-bottom:6px">卡片颜色 <span style="font-weight:400">（纯文字卡片的背景色）</span></label>
         <div style="display:flex;gap:8px;flex-wrap:wrap" id="cf-color-swatches"></div>
         <input id="cf-bg" type="color" style="margin-top:8px;height:32px;width:48px;border:none;cursor:pointer;border-radius:4px">
       </div>
       <div style="display:flex;gap:8px;justify-content:flex-end">
-        <button onclick="cancelCatForm()" style="background:#e2e8f0;border:none;border-radius:7px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;color:#475569">Cancel</button>
-        <button onclick="saveCat()" style="background:#10b981;border:none;border-radius:7px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;color:#fff">Save</button>
+        <button onclick="cancelCatForm()" style="background:#e2e8f0;border:none;border-radius:7px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;color:#475569">取消</button>
+        <button onclick="saveCat()" style="background:#10b981;border:none;border-radius:7px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;color:#fff">保存</button>
       </div>
     </div>
-    <button onclick="showCatForm()" id="add-cat-btn" style="width:100%;background:#f1f5f9;border:1.5px dashed #cbd5e1;border-radius:8px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;color:#64748b">+ Add Category</button>
+    <button onclick="showCatForm()" id="add-cat-btn" style="width:100%;background:#f1f5f9;border:1.5px dashed #cbd5e1;border-radius:8px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;color:#64748b">+ 添加分类</button>
   </div>
 </div>
 
@@ -521,12 +521,12 @@
 <div id="view-library" class="view active">
   <div class="page-header">
     <div>
-      <div class="ph-title">Flashcard Library</div>
-      <div class="ph-sub">Click a card to select · hover to edit / mark printed / delete</div>
+      <div class="ph-title">识字卡片库</div>
+      <div class="ph-sub">点击卡片可选中 · 悬停可编辑 / 标记已打印 / 删除</div>
     </div>
     <div style="display:flex;gap:8px">
-      <button class="btn btn-slate" onclick="printAllUnprinted()">🖨 Print All Unprinted</button>
-      <button class="btn btn-green" onclick="startAdd()">+ Add Card</button>
+      <button class="btn btn-slate" onclick="printAllUnprinted()">🖨 打印全部未打印</button>
+      <button class="btn btn-green" onclick="startAdd()">+ 新建卡片</button>
     </div>
   </div>
   <div class="content">
@@ -534,7 +534,7 @@
       <div id="cat-filters" style="display:flex;gap:7px;flex-wrap:wrap"></div>
       <div class="search-bar" id="search-bar">
         <span class="sb-icon">🔍</span>
-        <input type="search" id="search-input" placeholder="Search English or Chinese…" oninput="setSearch(this.value)">
+        <input type="search" id="search-input" placeholder="搜索英文或中文…" oninput="setSearch(this.value)">
         <button class="sb-clear" onclick="clearSearch()">✕</button>
       </div>
     </div>
@@ -547,7 +547,7 @@
 ═══════════════════════════════════════════════════════════════ -->
 <div id="view-add" class="view">
   <div class="page-header">
-    <div class="ph-title" id="form-ph-title">Add Flashcard</div>
+    <div class="ph-title" id="form-ph-title">新建卡片</div>
   </div>
   <div class="content">
     <div class="form-wrap">
@@ -556,15 +556,15 @@
 
           <!-- 1. FRONT TYPE -->
           <div class="field">
-            <label>Front of card</label>
+            <label>卡片正面</label>
             <div class="front-toggle">
               <div class="ft-btn on" id="ft-image" onclick="setFrontType('image')">
                 <div class="ft-btn-icon">🖼️</div>
-                <div class="ft-btn-label">Photo or image</div>
+                <div class="ft-btn-label">照片或图片</div>
               </div>
               <div class="ft-btn" id="ft-text" onclick="setFrontType('text')">
                 <div class="ft-btn-icon">🔤</div>
-                <div class="ft-btn-label">Text only</div>
+                <div class="ft-btn-label">仅文字</div>
               </div>
             </div>
           </div>
@@ -572,7 +572,7 @@
           <!-- 2. IMAGE PANEL -->
           <div id="panel-image">
             <div class="field" style="margin-bottom:10px">
-              <label>Upload image from your phone or computer</label>
+              <label>从手机或电脑上传图片</label>
               <div class="upload-zone" id="upload-zone"
                    ondragover="event.preventDefault();this.classList.add('drag')"
                    ondragleave="this.classList.remove('drag')"
@@ -580,30 +580,30 @@
                 <input type="file" accept="image/*" id="img-input" onchange="handleFile(this.files[0])">
                 <div class="upload-prompt" id="upload-prompt">
                   <div class="upload-prompt-icon">📷</div>
-                  <div class="upload-prompt-text"><strong>Click to upload</strong> or drag &amp; drop<br>JPG · PNG · WEBP — photos from phone work great</div>
+                  <div class="upload-prompt-text"><strong>点击上传</strong> 或拖放图片<br>JPG · PNG · WEBP — 手机拍的照片也可以</div>
                 </div>
                 <div class="upload-preview" id="upload-preview">
-                  <img id="img-preview" alt="preview">
+                  <img id="img-preview" alt="预览">
                   <div class="upload-actions">
-                    <button class="upload-clear upload-replace" onclick="event.stopPropagation();document.getElementById('img-input').click()">📷 Replace</button>
-                    <button class="upload-clear" onclick="clearImage(event)">✕ Remove</button>
+                    <button class="upload-clear upload-replace" onclick="event.stopPropagation();document.getElementById('img-input').click()">📷 替换</button>
+                    <button class="upload-clear" onclick="clearImage(event)">✕ 移除</button>
                   </div>
                 </div>
               </div>
             </div>
 
             <div class="field">
-              <label>Or paste an image URL from the web</label>
+              <label>或者粘贴网络图片地址</label>
               <div class="url-row">
-                <input type="url" id="f-url" placeholder="https://…  (right-click any image → Copy image address)">
-                <button class="btn btn-slate btn-sm" onclick="loadFromUrl()">Load</button>
+                <input type="url" id="f-url" placeholder="https://…  （右键任意图片 → 复制图片地址）">
+                <button class="btn btn-slate btn-sm" onclick="loadFromUrl()">加载</button>
               </div>
               <div class="search-hint">
-                Search for an image:
+                搜索图片：
                 <a href="https://unsplash.com" target="_blank">Unsplash</a> ·
                 <a href="https://www.pexels.com" target="_blank">Pexels</a> ·
-                <a href="https://images.google.com" target="_blank">Google Images</a>
-                — right-click any photo → <em>Copy image address</em> → paste above
+                <a href="https://images.google.com" target="_blank">Google 图片</a>
+                — 右键任意照片 → <em>复制图片地址</em> → 粘贴到上方
               </div>
             </div>
           </div>
@@ -611,9 +611,9 @@
           <!-- 3. TEXT PREVIEW (text-only mode) -->
           <div id="panel-text" style="display:none">
             <div class="field">
-              <label>The English text will be shown large on the front</label>
+              <label>英文文字将以大字显示在正面</label>
               <div class="text-preview-wrap">
-                <div class="text-preview" id="text-preview" style="background:#1e40af">PREVIEW</div>
+                <div class="text-preview" id="text-preview" style="background:#1e40af">预览</div>
               </div>
             </div>
           </div>
@@ -621,42 +621,42 @@
           <!-- 4. ENGLISH + CATEGORY -->
           <div class="field-row">
             <div class="field" style="flex:2">
-              <label>English text — shown on front</label>
-              <input type="text" id="f-en" placeholder="e.g. EXIT"
+              <label>英文 — 显示在正面</label>
+              <input type="text" id="f-en" placeholder="例：EXIT"
                      style="font-weight:800;letter-spacing:1.5px"
                      oninput="updateTextPreview();updateCardPreview()">
             </div>
             <div class="field" style="flex:1">
-              <label>Category</label>
+              <label>分类</label>
               <select id="f-cat" onchange="updateTextPreview();updateCardPreview()"></select>
             </div>
           </div>
 
           <!-- 5. CHINESE -->
           <div class="field field-zh">
-            <label style="color:#dc2626">Chinese translation — shown on back of card</label>
+            <label style="color:#dc2626">中文翻译 — 显示在卡片背面</label>
             <input type="text" id="f-zh" placeholder="例：出口" oninput="updateCardPreview()">
           </div>
 
           <!-- 6. HINT -->
           <div class="field">
-            <label>Hint or context — shown on back (optional)</label>
-            <textarea id="f-hint" placeholder="e.g. Green EXIT signs are above doors in shops, malls and buildings. 在超市和商场门上方会看到这个绿色标志。"></textarea>
+            <label>提示或背景信息 — 显示在背面（选填）</label>
+            <textarea id="f-hint" placeholder="例：Green EXIT signs are above doors in shops, malls and buildings. 在超市和商场门上方会看到这个绿色标志。"></textarea>
           </div>
 
         </div>
 
         <!-- LIVE CARD PREVIEW -->
         <div class="form-preview">
-          <div class="fp-label">Card Preview</div>
+          <div class="fp-label">卡片预览</div>
           <div class="fp-cards">
             <div class="fp-card" id="fp-front">
-              <div class="fp-card-label">Front</div>
-              <div class="fp-placeholder">Upload image or type word above</div>
+              <div class="fp-card-label">正面</div>
+              <div class="fp-placeholder">上传图片或输入文字</div>
             </div>
             <div class="fp-card" id="fp-back">
-              <div class="fp-card-label">Back</div>
-              <div class="fp-placeholder">Type Chinese translation above</div>
+              <div class="fp-card-label">背面</div>
+              <div class="fp-placeholder">请在上方输入中文翻译</div>
             </div>
           </div>
         </div>
@@ -664,8 +664,8 @@
       </div>
     </div>
     <div style="position:sticky;bottom:32px;display:flex;justify-content:flex-end;gap:8px;max-width:660px;pointer-events:none;margin-top:16px">
-      <button class="btn btn-slate" onclick="showView('library')" style="pointer-events:auto;border-radius:9px;padding:10px 22px;font-size:13px;font-weight:800">Cancel</button>
-      <button class="btn btn-green float-save" id="float-save" onclick="saveCard()" style="pointer-events:auto">Save Card</button>
+      <button class="btn btn-slate" onclick="showView('library')" style="pointer-events:auto;border-radius:9px;padding:10px 22px;font-size:13px;font-weight:800">取消</button>
+      <button class="btn btn-green float-save" id="float-save" onclick="saveCard()" style="pointer-events:auto">保存卡片</button>
     </div>
   </div>
 </div>
@@ -676,8 +676,8 @@
 <div id="view-print" class="view">
   <div class="page-header">
     <div>
-      <div class="ph-title">Print Flashcards</div>
-      <div class="ph-sub">A4 paper · 4 cards per sheet · cut &amp; fold · laminate</div>
+      <div class="ph-title">打印卡片</div>
+      <div class="ph-sub">A4 纸 · 每张4张卡片 · 剪切折叠 · 可过塑封</div>
     </div>
   </div>
   <div class="content">
@@ -691,10 +691,10 @@
 <div id="view-trash" class="view">
   <div class="page-header">
     <div>
-      <div class="ph-title">Deleted Cards</div>
-      <div class="ph-sub">Cards you have deleted — restore or permanently remove</div>
+      <div class="ph-title">已删除卡片</div>
+      <div class="ph-sub">已删除的卡片 — 可恢复或永久删除</div>
     </div>
-    <button class="btn btn-slate" onclick="purgeAll()" id="purge-all-btn" style="display:none">🗑 Clear All</button>
+    <button class="btn btn-slate" onclick="purgeAll()" id="purge-all-btn" style="display:none">🗑 清空全部</button>
   </div>
   <div class="content">
     <div id="trash-list"></div>
@@ -707,15 +707,15 @@
 <!-- ── FLOATING SELECTION BAR ────────────────────────────────── -->
 <div class="sel-bar hidden" id="sel-bar">
   <span id="sel-count"></span>
-  <button class="btn btn-green btn-sm" onclick="doPrint()">🖨️ Print Now</button>
-  <button class="btn btn-slate btn-sm" onclick="markSelPrinted()">✅ Mark Printed</button>
-  <button class="btn btn-slate btn-sm" onclick="clearSel()">Clear</button>
+  <button class="btn btn-green btn-sm" onclick="doPrint()">🖨️ 立即打印</button>
+  <button class="btn btn-slate btn-sm" onclick="markSelPrinted()">✅ 标记已打印</button>
+  <button class="btn btn-slate btn-sm" onclick="clearSel()">取消选择</button>
 </div>
 
 <div class="undo-toast hidden" id="undo-toast">
   <span id="undo-msg"></span>
-  <button class="undo-btn" id="undo-btn" onclick="doUndo()">↩ Undo</button>
-  <button class="undo-btn" id="redo-btn" onclick="doRedo()" style="display:none">↪ Redo</button>
+  <button class="undo-btn" id="undo-btn" onclick="doUndo()">↩ 撤销</button>
+  <button class="undo-btn" id="redo-btn" onclick="doRedo()" style="display:none">↪ 重做</button>
   <button class="undo-close" onclick="hideUndo()">✕</button>
 </div>
 
@@ -779,9 +779,9 @@
   function setSyncStatus(state) {
     const el = document.getElementById('sync-status');
     if (!el) return;
-    if (state === 'saving')  { el.textContent = '☁️ Saving…'; el.style.color = '#f59e0b'; }
-    else if (state === 'ok') { el.textContent = '☁️ Synced';  el.style.color = '#10b981'; }
-    else if (state === 'err'){ el.textContent = '⚠️ Sync failed'; el.style.color = '#ef4444'; }
+    if (state === 'saving')  { el.textContent = '☁️ 保存中…'; el.style.color = '#f59e0b'; }
+    else if (state === 'ok') { el.textContent = '☁️ 已同步';  el.style.color = '#10b981'; }
+    else if (state === 'err'){ el.textContent = '⚠️ 同步失败'; el.style.color = '#ef4444'; }
     else                     { el.textContent = ''; }
   }
 
@@ -870,7 +870,7 @@
     else await doGhSave();
   }
   function disconnectSync() {
-    if (!confirm('Disconnect GitHub sync? Your cards stay in the browser.')) return;
+    if (!confirm('确定断开 GitHub 同步吗？卡片数据将保留在浏览器中。')) return;
     localStorage.removeItem(GH_TOKEN_KEY);
     ghSha = null;
     hideSyncModal();
@@ -892,17 +892,17 @@
 
   function renderCatsList() {
     const list = document.getElementById('cats-list');
-    if (!categories.length) { list.innerHTML = '<div style="color:#94a3b8;font-size:13px;text-align:center;padding:12px">No categories yet</div>'; return; }
+    if (!categories.length) { list.innerHTML = '<div style="color:#94a3b8;font-size:13px;text-align:center;padding:12px">暂无分类</div>'; return; }
     list.innerHTML = categories.map((cat, i) => {
       const usedCount = cards.filter(c => c.category === cat.id).length;
       return `<div style="display:flex;align-items:center;gap:10px;background:#f8fafc;border-radius:8px;padding:10px 12px">
         <div style="width:28px;height:28px;border-radius:6px;background:${cat.bg};display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">${cat.icon}</div>
         <div style="flex:1;min-width:0">
           <div style="font-size:13px;font-weight:700">${cat.label}</div>
-          <div style="font-size:11px;color:#64748b">${cat.labelZh} · ${usedCount} card${usedCount!==1?'s':''}</div>
+          <div style="font-size:11px;color:#64748b">${cat.labelZh} · ${usedCount} 张卡片</div>
         </div>
-        <button onclick="showCatForm('${cat.id}')" style="background:#e2e8f0;border:none;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;color:#475569">Edit</button>
-        <button onclick="deleteCat('${cat.id}')" style="background:#fee2e2;border:none;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;color:#dc2626"${usedCount>0?' title="'+usedCount+' cards use this category"':''}>Del</button>
+        <button onclick="showCatForm('${cat.id}')" style="background:#e2e8f0;border:none;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;color:#475569">编辑</button>
+        <button onclick="deleteCat('${cat.id}')" style="background:#fee2e2;border:none;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;color:#dc2626"${usedCount>0?' title="'+usedCount+' 张卡片使用此分类"':''}>删除</button>
       </div>`;
     }).join('');
   }
@@ -915,13 +915,13 @@
     swatches.innerHTML = SWATCHES.map(c => `<div onclick="document.getElementById('cf-bg').value='${c}'" style="width:24px;height:24px;border-radius:5px;background:${c};cursor:pointer;border:2px solid transparent" onmouseover="this.style.borderColor='#0f172a'" onmouseout="this.style.borderColor='transparent'"></div>`).join('');
     if (editId) {
       const cat = categories.find(c => c.id === editId);
-      document.getElementById('cat-form-title').textContent = 'Edit Category';
+      document.getElementById('cat-form-title').textContent = '编辑分类';
       document.getElementById('cf-icon').value    = cat.icon;
       document.getElementById('cf-label').value   = cat.label;
       document.getElementById('cf-labelzh').value = cat.labelZh;
       document.getElementById('cf-bg').value      = cat.bg;
     } else {
-      document.getElementById('cat-form-title').textContent = 'Add Category';
+      document.getElementById('cat-form-title').textContent = '添加分类';
       document.getElementById('cf-icon').value    = '';
       document.getElementById('cf-label').value   = '';
       document.getElementById('cf-labelzh').value = '';
@@ -940,7 +940,7 @@
     const label   = document.getElementById('cf-label').value.trim();
     const labelZh = document.getElementById('cf-labelzh').value.trim();
     const bg      = document.getElementById('cf-bg').value;
-    if (!label) { alert('Please enter an English name.'); return; }
+    if (!label) { alert('请输入英文名称。'); return; }
     if (catEditId) {
       const cat = categories.find(c => c.id === catEditId);
       Object.assign(cat, { icon, label, labelZh, bg });
@@ -958,9 +958,9 @@
     const usedCount = cards.filter(c => c.category === id).length;
     const cat = categories.find(c => c.id === id);
     if (usedCount > 0) {
-      if (!confirm(`"${cat.label}" is used by ${usedCount} card${usedCount!==1?'s':''}. Delete anyway? Those cards will still exist but show a missing category.`)) return;
+      if (!confirm(`"${cat.label}" 被 ${usedCount} 张卡片使用。确定删除吗？这些卡片仍会保留，但分类将显示为缺失。`)) return;
     } else {
-      if (!confirm(`Delete category "${cat.label}"?`)) return;
+      if (!confirm(`确定删除分类"${cat.label}"吗？`)) return;
     }
     categories = categories.filter(c => c.id !== id);
     persistCats();
@@ -1015,11 +1015,11 @@
     const filtered = [...base].sort((a, b) => (a.printed ? 1 : 0) - (b.printed ? 1 : 0));
     const grid = document.getElementById('card-grid');
     if (!cards.length) {
-      grid.innerHTML = `<div class="empty"><div class="empty-icon">📚</div><div class="empty-title">No flashcards yet</div><div class="empty-sub">Click "Add Card" to create the first card for Dad &amp; Mum</div></div>`;
+      grid.innerHTML = `<div class="empty"><div class="empty-icon">📚</div><div class="empty-title">还没有卡片</div><div class="empty-sub">点击"新建卡片"为爸爸妈妈创建第一张卡片</div></div>`;
       return;
     }
     if (!filtered.length) {
-      const msg = searchQuery ? `No cards matching "${searchQuery}"` : 'No cards in this category';
+      const msg = searchQuery ? `没有匹配"${searchQuery}"的卡片` : '此分类下没有卡片';
       grid.innerHTML = `<div class="empty"><div class="empty-icon">🔍</div><div class="empty-title">${msg}</div></div>`;
       return;
     }
@@ -1036,8 +1036,8 @@
           ${thumb}
           ${c.printed ? `<div class="fc-num">#${num}</div>` : ''}
           <div class="fc-over" onclick="event.stopPropagation()">
-            <button class="fc-ob" onclick="editCard('${c.id}')">Edit</button>
-            <button class="fc-ob fc-ob-del" onclick="deleteCard('${c.id}')">Del</button>
+            <button class="fc-ob" onclick="editCard('${c.id}')">编辑</button>
+            <button class="fc-ob fc-ob-del" onclick="deleteCard('${c.id}')">删除</button>
           </div>
           <div class="fc-tick">
             <svg viewBox="0 0 11 9" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -1049,13 +1049,13 @@
             <div class="fc-zh">${c.zh}</div>
             <div class="fc-cat"><span class="pill" style="${catPillStyle(c.category)}">${catIcon(c.category)} ${catLabel(c.category)}</span></div>
             <div class="fc-dates">
-              <div>Created: ${fmtDate(c.createdAt)}</div>
-              ${c.updatedAt ? `<div>Edited: ${fmtDate(c.updatedAt)}</div>` : ''}
+              <div>创建：${fmtDate(c.createdAt)}</div>
+              ${c.updatedAt ? `<div>编辑：${fmtDate(c.updatedAt)}</div>` : ''}
             </div>
           </div>
           <div class="fc-prt-row" onclick="event.stopPropagation()">
             <button class="fc-prt-btn${c.printed ? ' is-printed' : ''}" onclick="togglePrinted('${c.id}')">
-              ${c.printed ? '↩ Unprint' : '🖨 Mark Printed'}
+              ${c.printed ? '↩ 取消打印标记' : '🖨 标记已打印'}
             </button>
           </div>
         </div>`;
@@ -1065,7 +1065,7 @@
   function renderFilters() {
     const cats = [...new Set(cards.map(c => c.category))];
     document.getElementById('cat-filters').innerHTML = [
-      `<button class="filter-btn${filter==='all'?' on':''}" onclick="setFilter('all')">All (${cards.length})</button>`,
+      `<button class="filter-btn${filter==='all'?' on':''}" onclick="setFilter('all')">全部 (${cards.length})</button>`,
       ...cats.map(cat => `<button class="filter-btn${filter===cat?' on':''}" onclick="setFilter('${cat}')">${catIcon(cat)} ${catLabel(cat)}</button>`)
     ].join('');
   }
@@ -1090,7 +1090,7 @@
     const sb = document.getElementById('sel-bar');
     if (sel.size > 0) {
       bs.textContent = sel.size; bs.style.display = '';
-      document.getElementById('sel-count').textContent = `${sel.size} card${sel.size!==1?'s':''} selected`;
+      document.getElementById('sel-count').textContent = `已选 ${sel.size} 张卡片`;
       sb.classList.remove('hidden');
     } else {
       bs.style.display = 'none';
@@ -1114,8 +1114,8 @@
     document.getElementById('img-input').value = '';
     showUploadPrompt();
     setFrontType('image');
-    document.getElementById('form-ph-title').textContent = 'Add Flashcard';
-    document.getElementById('float-save').textContent    = 'Save Card';
+    document.getElementById('form-ph-title').textContent = '新建卡片';
+    document.getElementById('float-save').textContent    = '保存卡片';
     showView('add');
     updateCardPreview();
   }
@@ -1134,14 +1134,14 @@
     if (c.img) showUploadPreview(c.img);
     else       showUploadPrompt();
     updateTextPreview();
-    document.getElementById('form-ph-title').textContent = 'Edit Flashcard';
-    document.getElementById('float-save').textContent    = 'Update Card';
+    document.getElementById('form-ph-title').textContent = '编辑卡片';
+    document.getElementById('float-save').textContent    = '更新卡片';
     showView('add');
     updateCardPreview();
   }
 
   function deleteCard(id) {
-    if (!confirm('Delete this card?')) return;
+    if (!confirm('确定删除这张卡片吗？')) return;
     const card = cards.find(c => c.id === id);
     if (card) { deleted.unshift({ ...card, deletedAt: new Date().toISOString().slice(0,10) }); persistDeleted(); }
     cards = cards.filter(c => c.id !== id); sel.delete(id);
@@ -1155,7 +1155,7 @@
     const nowPrinted = !cards[idx].printed;
     cards[idx].printed = nowPrinted;
     persist(); renderLibrary();
-    if (nowPrinted) showUndo('Marked as printed', snapshot);
+    if (nowPrinted) showUndo('已标记为已打印', snapshot);
     else hideUndo();
   }
 
@@ -1167,7 +1167,7 @@
       if (idx >= 0) cards[idx].printed = true;
     });
     persist(); sel.clear(); renderLibrary();
-    showUndo(`${count} card${count !== 1 ? 's' : ''} marked as printed`, snapshot);
+    showUndo(`${count} 张卡片已标记为已打印`, snapshot);
   }
 
   function showUndo(message, snapshot) {
@@ -1181,14 +1181,14 @@
     const hasUndo = undoStack.length > 0;
     const hasRedo = redoStack.length > 0;
     if (!hasUndo && !hasRedo) { hideUndo(); return; }
-    const label = hasUndo ? undoStack[undoStack.length - 1].message : 'Redo';
+    const label = hasUndo ? undoStack[undoStack.length - 1].message : '重做';
     document.getElementById('undo-msg').textContent = label;
     const undoBtn = document.getElementById('undo-btn');
     const redoBtn = document.getElementById('redo-btn');
-    undoBtn.textContent = `↩ Undo${undoStack.length > 1 ? ' ('+undoStack.length+')' : ''}`;
+    undoBtn.textContent = `↩ 撤销${undoStack.length > 1 ? '（'+undoStack.length+'）' : ''}`;
     undoBtn.disabled    = !hasUndo;
     undoBtn.style.opacity = hasUndo ? '1' : '0.4';
-    redoBtn.textContent = `↪ Redo${redoStack.length > 1 ? ' ('+redoStack.length+')' : ''}`;
+    redoBtn.textContent = `↪ 重做${redoStack.length > 1 ? '（'+redoStack.length+'）' : ''}`;
     redoBtn.style.display = hasRedo ? '' : 'none';
     document.getElementById('undo-toast').classList.remove('hidden');
     undoTimer = setTimeout(() => { undoStack = []; redoStack = []; hideUndo(); }, 15000);
@@ -1210,14 +1210,14 @@
   function doRedo() {
     if (!redoStack.length) return;
     const current = JSON.parse(JSON.stringify(cards));
-    undoStack.push({ message: 'Redo', snapshot: current });
+    undoStack.push({ message: '重做', snapshot: current });
     cards = redoStack.pop();
     persist(); renderLibrary(); refreshUndoToast();
   }
 
   function printAllUnprinted() {
     const unprinted = cards.filter(c => !c.printed);
-    if (!unprinted.length) { alert('All cards are already marked as printed!'); return; }
+    if (!unprinted.length) { alert('所有卡片都已标记为已打印！'); return; }
     sel.clear();
     unprinted.forEach(c => sel.add(c.id));
     showView('print');
@@ -1228,7 +1228,7 @@
     const zh   = document.getElementById('f-zh').value.trim();
     const hint = document.getElementById('f-hint').value.trim();
     const cat  = document.getElementById('f-cat').value;
-    if (!zh) { alert('Please enter the Chinese translation.'); return; }
+    if (!zh) { alert('请输入中文翻译。'); return; }
     const card = { en, zh, hint, category: cat, frontType, img: frontType === 'image' ? imgData : null };
     if (editId) {
       const idx = cards.findIndex(c => c.id === editId);
@@ -1251,7 +1251,7 @@
   }
 
   function updateTextPreview() {
-    const en  = document.getElementById('f-en').value || 'PREVIEW';
+    const en  = document.getElementById('f-en').value || '预览';
     const cat = document.getElementById('f-cat').value;
     const bg  = catBg(cat);
     const el  = document.getElementById('text-preview');
@@ -1271,38 +1271,38 @@
     // Front
     if (frontType === 'image' && imgData) {
       front.innerHTML = `
-        <div class="fp-card-label">Front</div>
+        <div class="fp-card-label">正面</div>
         <img class="fp-img" src="${imgData}" alt="">
         ${en ? `<div class="fp-en-bar">${en}</div>` : ''}`;
     } else if (frontType === 'text' && en) {
       front.innerHTML = `
-        <div class="fp-card-label">Front</div>
+        <div class="fp-card-label">正面</div>
         <div class="fp-text-face" style="background:${bg}">${en}</div>`;
     } else {
       front.innerHTML = `
-        <div class="fp-card-label">Front</div>
-        <div class="fp-placeholder">${frontType === 'image' ? 'Upload an image' : 'Type English word above'}</div>`;
+        <div class="fp-card-label">正面</div>
+        <div class="fp-placeholder">${frontType === 'image' ? '请上传图片' : '请在上方输入英文'}</div>`;
     }
 
     // Back
     if (zh) {
       back.innerHTML = `
-        <div class="fp-card-label">Back</div>
+        <div class="fp-card-label">背面</div>
         <div class="fp-back-inner">
           <div class="fp-zh">${zh}</div>
           ${en ? `<div class="fp-en-b">${en}</div>` : ''}
         </div>`;
     } else {
       back.innerHTML = `
-        <div class="fp-card-label">Back</div>
-        <div class="fp-placeholder">Type Chinese translation above</div>`;
+        <div class="fp-card-label">背面</div>
+        <div class="fp-placeholder">请在上方输入中文翻译</div>`;
     }
   }
 
   // ── IMAGE UPLOAD ──────────────────────────────────────────────
   function handleFile(file) {
     if (!file) return;
-    if (file.size > 8 * 1024 * 1024) { alert('Image too large. Max 8 MB.'); return; }
+    if (file.size > 8 * 1024 * 1024) { alert('图片太大，最大 8 MB。'); return; }
     const reader = new FileReader();
     reader.onload = e => compressImage(e.target.result, 920, 0.80).then(d => { imgData = d; showUploadPreview(d); updateCardPreview(); });
     reader.readAsDataURL(file);
@@ -1348,7 +1348,7 @@
     const btn  = document.getElementById('purge-all-btn');
     btn.style.display = deleted.length ? '' : 'none';
     if (!deleted.length) {
-      list.innerHTML = `<div class="empty"><div class="empty-icon">🗑️</div><div class="empty-title">No deleted cards</div><div class="empty-sub">Deleted cards appear here so you can restore them</div></div>`;
+      list.innerHTML = `<div class="empty"><div class="empty-icon">🗑️</div><div class="empty-title">没有已删除的卡片</div><div class="empty-sub">删除的卡片会显示在这里，您可以恢复它们</div></div>`;
       return;
     }
     list.innerHTML = `<div class="trash-list">` + deleted.map(c => {
@@ -1360,16 +1360,16 @@
         <div class="trash-item">
           <div class="trash-thumb">${thumb}</div>
           <div class="trash-info">
-            <div class="trash-en">${c.en || '(no English)'}</div>
+            <div class="trash-en">${c.en || '（无英文）'}</div>
             <div class="trash-zh">${c.zh}</div>
             <div class="trash-meta">
-              Deleted ${fmtDate(c.deletedAt)} · Created ${fmtDate(c.createdAt)}
-              ${c.updatedAt ? ` · Edited ${fmtDate(c.updatedAt)}` : ''}
+              删除于 ${fmtDate(c.deletedAt)} · 创建于 ${fmtDate(c.createdAt)}
+              ${c.updatedAt ? ` · 编辑于 ${fmtDate(c.updatedAt)}` : ''}
             </div>
           </div>
           <div class="trash-actions">
-            <button class="btn btn-green btn-sm" onclick="restoreCard('${c.id}')">↩ Restore</button>
-            <button class="btn btn-slate btn-sm" onclick="purgeCard('${c.id}')">✕ Delete</button>
+            <button class="btn btn-green btn-sm" onclick="restoreCard('${c.id}')">↩ 恢复</button>
+            <button class="btn btn-slate btn-sm" onclick="purgeCard('${c.id}')">✕ 永久删除</button>
           </div>
         </div>`;
     }).join('') + `</div>`;
@@ -1386,13 +1386,13 @@
   }
 
   function purgeCard(id) {
-    if (!confirm('Permanently delete this card? This cannot be undone.')) return;
+    if (!confirm('确定永久删除这张卡片吗？此操作无法撤销。')) return;
     deleted = deleted.filter(c => c.id !== id);
     persistDeleted(); renderTrash(); updateBadges();
   }
 
   function purgeAll() {
-    if (!confirm(`Permanently delete all ${deleted.length} deleted cards?`)) return;
+    if (!confirm(`确定永久删除全部 ${deleted.length} 张已删除卡片吗？`)) return;
     deleted = [];
     persistDeleted(); renderTrash(); updateBadges();
   }
@@ -1402,7 +1402,7 @@
     const area   = document.getElementById('print-area');
     const chosen = cards.filter(c => sel.has(c.id));
     if (!chosen.length) {
-      area.innerHTML = `<div class="empty"><div class="empty-icon">🖨️</div><div class="empty-title">No cards selected</div><div class="empty-sub">Go to the Library, click cards to select them (green tick), then come back to print.</div></div>`;
+      area.innerHTML = `<div class="empty"><div class="empty-icon">🖨️</div><div class="empty-title">未选择卡片</div><div class="empty-sub">请前往卡片库，点击卡片选中（绿色勾选），再回来打印。</div></div>`;
       return;
     }
     // Each card prints twice (blue + pink), so doubled count determines pages
@@ -1421,15 +1421,15 @@
             box-shadow:0 8px 32px rgba(16,185,129,.40); letter-spacing:-0.5px;
             transition:opacity .15s; line-height:1.15; text-align:center;
           " onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
-            🖨️ Print Now
+            🖨️ 立即打印
           </button>
           <div style="font-size:15px;font-weight:700;color:#475569;white-space:nowrap;line-height:1.8">
-            <span style="color:#0f172a;font-size:22px;font-weight:900">${chosen.length}</span> card${chosen.length!==1?'s':''} &nbsp;·&nbsp;
-            <span style="color:#059669;font-size:22px;font-weight:900">${sheets}</span> piece${sheets!==1?'s':''} of paper &nbsp;·&nbsp;
-            <span style="color:#d97706;font-size:22px;font-weight:900">${canAdd}</span> card${canAdd!==1?'s':''} ${canAdd===0?'(pages full)':'can still add'}
+            <span style="color:#0f172a;font-size:22px;font-weight:900">${chosen.length}</span> 张卡片 &nbsp;·&nbsp;
+            <span style="color:#059669;font-size:22px;font-weight:900">${sheets}</span> 张纸 &nbsp;·&nbsp;
+            <span style="color:#d97706;font-size:22px;font-weight:900">${canAdd}</span> 张 ${canAdd===0?'（已满）':'可继续添加'}
           </div>
         </div>
-        <button class="btn btn-slate" onclick="clearSel();showView('library')">← Back to library</button>
+        <button class="btn btn-slate" onclick="clearSel();showView('library')">← 返回卡片库</button>
       </div>
       <div class="pv-pairs">`;
     chosen.forEach((c, i) => {
@@ -1454,8 +1454,8 @@
           </div>
         </div>
         <div class="pv-row-actions">
-          <button class="btn btn-slate btn-sm" onclick="editCard('${c.id}')">Edit</button>
-          <button class="btn btn-slate btn-sm" style="color:#ef4444" onclick="removeFromSel('${c.id}')">Remove</button>
+          <button class="btn btn-slate btn-sm" onclick="editCard('${c.id}')">编辑</button>
+          <button class="btn btn-slate btn-sm" style="color:#ef4444" onclick="removeFromSel('${c.id}')">移除</button>
         </div>`;
     });
     html += `</div>`;
@@ -1540,7 +1540,7 @@
 
   function doPrint() {
     const chosen = cards.filter(c => sel.has(c.id));
-    if (!chosen.length) { alert('No cards selected.'); return; }
+    if (!chosen.length) { alert('未选择任何卡片。'); return; }
     // Each card prints twice: blue (dad) then pink (mum)
     const doubled = chosen.flatMap(c => [{ card: c, dot: 'blue' }, { card: c, dot: 'pink' }]);
     let html = '';
@@ -1551,7 +1551,7 @@
 
   // ── EXPORT / IMPORT ───────────────────────────────────────────
   function exportCards() {
-    if (!cards.length) { alert('No cards to export.'); return; }
+    if (!cards.length) { alert('没有可导出的卡片。'); return; }
     const blob = new Blob([JSON.stringify(cards, null, 2)], { type: 'application/json' });
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
     a.download = 'rp-cards-' + new Date().toISOString().slice(0,10) + '.json'; a.click();
@@ -1567,9 +1567,9 @@
         const existing = new Set(cards.map(c => c.id));
         const newCards = imported.filter(c => !existing.has(c.id));
         cards = [...cards, ...newCards]; persist();
-        alert(`Imported ${newCards.length} new card${newCards.length!==1?'s':''}.`);
+        alert(`已导入 ${newCards.length} 张新卡片。`);
         renderLibrary();
-      } catch { alert('Invalid file — please use an RP export.'); }
+      } catch { alert('文件无效 — 请使用本应用导出的文件。'); }
     };
     reader.readAsText(file); input.value = '';
   }
