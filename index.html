@@ -816,18 +816,26 @@
   }
 
   async function doGhLoad() {
-    const token = ghToken();
-    if (!token) return false;
     try {
       setSyncStatus('saving');
-      const res = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (res.status === 404) { setSyncStatus('ok'); return false; }
-      if (!res.ok) throw new Error(res.status);
-      const data = await res.json();
-      ghSha = data.sha;
-      const payload = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g, '')))));
+      const token = ghToken();
+      let payload;
+      if (token) {
+        // Authenticated: use GitHub API to also get SHA (required for saving)
+        const res = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.status === 404) { setSyncStatus('ok'); return false; }
+        if (!res.ok) throw new Error(res.status);
+        const data = await res.json();
+        ghSha = data.sha;
+        payload = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g, '')))));
+      } else {
+        // No token: fetch raw file directly (public repo, no auth needed, read-only)
+        const res = await fetch(`https://raw.githubusercontent.com/${GH_REPO}/main/${GH_FILE}?t=${Date.now()}`);
+        if (!res.ok) { setSyncStatus('ok'); return false; }
+        payload = await res.json();
+      }
       if (Array.isArray(payload.cards))       { cards       = payload.cards;      localStorage.setItem(STORE,     JSON.stringify(cards));      }
       if (Array.isArray(payload.deleted))     { deleted     = payload.deleted;    localStorage.setItem(DEL_STORE, JSON.stringify(deleted));    }
       if (Array.isArray(payload.categories))  { categories  = payload.categories; localStorage.setItem(CAT_STORE, JSON.stringify(categories)); }
@@ -1569,9 +1577,7 @@
   // ── INIT ─────────────────────────────────────────────────────
   load(); loadDeleted(); loadCats();
   renderLibrary();
-  if (ghToken()) {
-    doGhLoad().then(loaded => { if (loaded) renderLibrary(); });
-  }
+  doGhLoad().then(loaded => { if (loaded) renderLibrary(); });
 </script>
 </body>
 </html>
